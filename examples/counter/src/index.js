@@ -1,0 +1,1 @@
+import Example from './new'

@@ -8,8 +8,6 @@ const counter = new CounterReduxion()
 
 const store = createStore(counter)
 
-Reduxion.setStore(store)
-
 const rootEl = document.getElementById('root')
 
 const render = () => ReactDOM.render(

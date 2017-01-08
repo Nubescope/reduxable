@@ -1,4 +1,6 @@
 import camelCase from 'lodash/camelCase'
+import upperCase from 'lodash/upperCase'
+import createStore from './createStore'
 
 export default class Reduxion {
   static setStore(store) {
@@ -9,7 +11,7 @@ export default class Reduxion {
     this.constructor._store.dispatch(arguments)
   }
 
-  get reducer() {
+  getReducer() {
     return (state = this.state, action) => {
       const type = camelCase(action.type)
       const method = this.reducers[type]
@@ -28,7 +30,7 @@ export default class Reduxion {
 
       for(const reducer in this.reducers) {
         if (this.reducers.hasOwnProperty(reducer)) {
-          const type = _.upperCase(reducer).replace(' ', '_')
+          const type = upperCase(reducer).replace(' ', '_')
           this._actions[reducer] = (action) => ({ ...action, type })
         }
       }
@@ -43,13 +45,17 @@ export default class Reduxion {
 
       for(const reducer in this.reducers) {
         if (this.reducers.hasOwnProperty(reducer)) {
-          const type = _.upperCase(reducer).replace(' ', '_')
+          const type = upperCase(reducer).replace(' ', '_')
           const dispatch = this.constructor._store.dispatch
-          this._boundedActions[reducer] = ({...args}) => dispatch({ ...args, type })
+          this._boundedActions[reducer] = (action) => dispatch({ ...action, type })
         }
       }
     }
 
     return this._boundedActions
   }
+}
+
+export {
+  createStore
 }

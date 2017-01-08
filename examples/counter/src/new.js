@@ -1,13 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { createStore } from 'redux'
+import Reduxion, { createStore } from 'reduxion'
 import Counter from './components/Counter'
 
-import Reduxion from 'reduxion'
 import CounterReduxion from './reduxions'
 const counter = new CounterReduxion()
 
-const store = createStore(counter.reducer)
+const store = createStore(counter)
 
 Reduxion.setStore(store)
 

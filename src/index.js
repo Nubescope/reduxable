@@ -1,11 +1,11 @@
 import Reduxion from './Reduxion'
 import Reducer from './Reducer'
 import createStore from './createStore'
-import combineStore from './combineStore'
+import combineReducers from './combineReducers'
 
 export default Reduxion
 export {
   createStore,
-  combineStore,
+  combineReducers,
   Reducer,
 }

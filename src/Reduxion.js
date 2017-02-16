@@ -6,12 +6,25 @@ export default class Reduxion {
     this._store = store
   }
 
+  setScope(scope) {
+    this._scope = scope
+  }
+
   dispatch() {
     this.constructor._store.dispatch(arguments)
   }
 
+  getState() {
+    let state = this.constructor._store.getState()
+    return this._scope.split('.').reduce((object, scopeKey) => object[scopeKey], state)
+  }
+
   getReducer() {
     return (state = this.state, action) => {
+      if (action.scope !== this._scope) {
+        return state
+      }
+
       const type = camelCase(action.type)
       const method = this.reducers[type]
 
@@ -30,7 +43,8 @@ export default class Reduxion {
       for(const reducer in this.reducers) {
         if (this.reducers.hasOwnProperty(reducer)) {
           const type = upperCase(reducer).replace(' ', '_')
-          this._actions[reducer] = (action) => ({ ...action, type })
+          const scope = this._scope
+          this._actions[reducer] = (action) => ({ ...action, type, scope })
         }
       }
     }
@@ -38,7 +52,7 @@ export default class Reduxion {
     return this._actions
   }
 
-  get boundedActions() {
+  get dispatchers() {
     if (!this._boundedActions) {
       this._boundedActions = {}
 
@@ -46,7 +60,8 @@ export default class Reduxion {
         if (this.reducers.hasOwnProperty(reducer)) {
           const type = upperCase(reducer).replace(' ', '_')
           const dispatch = this.constructor._store.dispatch
-          this._boundedActions[reducer] = (action) => dispatch({ ...action, type })
+          const scope = this._scope
+          this._boundedActions[reducer] = (action) => dispatch({ ...action, type, scope })
         }
       }
     }

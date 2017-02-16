@@ -15,9 +15,27 @@ export default function combineReducersWithReduxions(reducers) {
   // TODO: check for Reduxion inhetirance properly
   //       Don't know why `reducer.constructor.prototype instanceof Reduxion` is not working
   const newReducers = {}
-  reducers.forEach((reducer, key) => {
-    newReducers[key] = reducer.getReducer ? reducer.getReducer() : reducer
+  Object.keys(reducers).forEach(key => {
+    const reducer = reducers[key]
+    if (reducer.setScope) {
+      reducer.setScope(key)
+    }
+
+    if (reducer.getReducer) {
+      newReducers[key] = reducer.getReducer()
+    } else {
+      newReducers[key] = reducer
+    }
   })
 
-  return combineReducers(newReducers)
+  const reducer = combineReducers(newReducers)
+  reducer.setScope = scope => {
+    Object.keys(reducers).forEach(key => {
+      const reducer = reducers[key]
+      if (reducer.setScope) {
+        reducer.setScope(`${scope}.${key}`)
+      }
+    })
+  }
+  return reducer
 }

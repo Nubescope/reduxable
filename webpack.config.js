@@ -35,7 +35,7 @@ if (env === 'production') {
       output: {
         screw_ie8: false,
       },
-    }),
+    })
   );
 }
 

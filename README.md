@@ -1,4 +1,4 @@
-Reduxion removes the boilerplate from Redux.
+Reduxable removes the boilerplate from Redux.
 
 It's still based on Redux so you should know how it works before start using this library.
 
@@ -7,7 +7,7 @@ It's still based on Redux so you should know how it works before start using thi
 To install the stable version:
 
 ```
-npm install --save reduxion
+npm install --save reduxable
 ```
 
 ### Motivation
@@ -76,12 +76,12 @@ store.dispatch({ type: 'DECREMENT' })
 
 ### Examples
 
-* [Counter](https://github.com/underscopeio/reduxion/tree/master/examples/counter)
+* [Counter](https://github.com/underscopeio/reduxable/tree/master/examples/counter)
 
 ### Change Log
 
 This project adheres to [Semantic Versioning](http://semver.org/).
-Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/underscopeio/reduxion/releases) page.
+Every release, along with the migration instructions, is documented on the Github [Releases](https://github.com/underscopeio/reduxable/releases) page.
 
 ### License
 

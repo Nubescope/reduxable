@@ -1,8 +1,8 @@
 {
-  "name": "reduxion",
+  "name": "reduxable",
   "version": "0.0.1",
   "description": "Redux made comfortable",
-  "browser": "dist/reduxion.js",
+  "browser": "dist/reduxable.js",
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
@@ -27,18 +27,18 @@
     "check:examples": "npm run build:examples && npm run lint:examples && npm run test:examples",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
-    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack src/index.js dist/reduxion.js",
-    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack src/index.js dist/reduxion.min.js",
+    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack src/index.js dist/reduxable.js",
+    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack src/index.js dist/reduxable.min.js",
     "build:examples": "babel-node examples/buildAll.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepublish": "npm run clean && npm run build && check-es3-syntax lib/ dist/ --kill --print"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/underscopeio/reduxion.git"
+    "url": "https://github.com/underscopeio/reduxable.git"
   },
   "keywords": [
-    "reduxion",
+    "reduxable",
     "redux",
     "no boilerplate"
   ],
@@ -47,9 +47,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/underscopeio/reduxion/issues"
+    "url": "https://github.com/underscopeio/reduxable/issues"
   },
-  "homepage": "https://github.com/underscopeio/reduxion",
+  "homepage": "https://github.com/underscopeio/reduxable",
   "dependencies": {
     "lodash": "^4.2.1",
     "redux": "^3.6.0"
@@ -96,7 +96,7 @@
     "typescript-definition-tester": "0.0.4",
     "webpack": "^1.9.6"
   },
-  "npmName": "reduxion",
+  "npmName": "reduxable",
   "npmFileMap": [
     {
       "basePath": "/dist/",

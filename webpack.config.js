@@ -1,24 +1,22 @@
 'use strict';
 
-var webpack = require('webpack')
+var webpack = require('webpack');
 
-var env = process.env.NODE_ENV
+var env = process.env.NODE_ENV;
 var config = {
   module: {
-    loaders: [
-      { test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }
-    ]
+    loaders: [{ test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }],
   },
   output: {
-    library: 'Reduxion',
-    libraryTarget: 'umd'
+    library: 'Reduxable',
+    libraryTarget: 'umd',
   },
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify(env)
-    })
-  ]
+      'process.env.NODE_ENV': JSON.stringify(env),
+    }),
+  ],
 };
 
 if (env === 'production') {
@@ -29,16 +27,16 @@ if (env === 'production') {
         unsafe: true,
         unsafe_comps: true,
         warnings: false,
-        screw_ie8: false
+        screw_ie8: false,
       },
       mangle: {
-        screw_ie8: false
+        screw_ie8: false,
       },
       output: {
-        screw_ie8: false
-      }
-    })
-  )
+        screw_ie8: false,
+      },
+    }),
+  );
 }
 
-module.exports = config
+module.exports = config;

@@ -1,41 +1,41 @@
-import { combineReducers } from 'redux'
+import { combineReducers } from 'redux';
 
-import Reduxion from './Reduxion'
+import Reduxable from './Reduxable';
 
 /**
  *
  * The only difference with Redux's `combineReducers` is that it also recognizes
- * the Reduxion instances getting its reducers.
+ * the Reduxable instances getting its reducers.
  *
  * @returns {Function} A reducer function that invokes every reducer inside the
  * passed object, and builds a state object with the same shape.
  */
 
-export default function combineReducersWithReduxions(reducers) {
-  // TODO: check for Reduxion inhetirance properly
-  //       Don't know why `reducer.constructor.prototype instanceof Reduxion` is not working
-  const newReducers = {}
+export default function combineReducersWithReduxables(reducers) {
+  // TODO: check for Reduxable inhetirance properly
+  //       Don't know why `reducer.constructor.prototype instanceof Reduxable` is not working
+  const newReducers = {};
   Object.keys(reducers).forEach(key => {
-    const reducer = reducers[key]
+    const reducer = reducers[key];
     if (reducer.setScope) {
-      reducer.setScope(key)
+      reducer.setScope(key);
     }
 
     if (reducer.getReducer) {
-      newReducers[key] = reducer.getReducer()
+      newReducers[key] = reducer.getReducer();
     } else {
-      newReducers[key] = reducer
+      newReducers[key] = reducer;
     }
-  })
+  });
 
-  const reducer = combineReducers(newReducers)
+  const reducer = combineReducers(newReducers);
   reducer.setScope = scope => {
     Object.keys(reducers).forEach(key => {
-      const reducer = reducers[key]
+      const reducer = reducers[key];
       if (reducer.setScope) {
-        reducer.setScope(`${scope}.${key}`)
+        reducer.setScope(`${scope}.${key}`);
       }
-    })
-  }
-  return reducer
+    });
+  };
+  return reducer;
 }

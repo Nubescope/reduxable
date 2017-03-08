@@ -16,6 +16,10 @@ export default class Reduxable {
 
   getState() {
     let state = this.constructor._store.getState();
+    if (!this._scope) {
+      return state;
+    }
+
     return this._scope.split('.').reduce((object, scopeKey) => object[scopeKey], state);
   }
 

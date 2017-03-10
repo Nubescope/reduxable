@@ -3,7 +3,7 @@ import Reduxable, { createStore } from '../src';
 class Counter extends Reduxable {
   constructor() {
     super();
-    this.state = 0;
+    this.initialState = 0;
   }
 
   increment() {

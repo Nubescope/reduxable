@@ -24,7 +24,7 @@ export default class Reduxable {
   }
 
   getReducer() {
-    return (state = this.state, action) => {
+    return (state = this.initialState, action) => {
       if (action.scope !== this._scope) {
         return state;
       }

@@ -1,5 +1,8 @@
+# Reduxable
+
 Reusable Redux
-(It also removes the boilerplate)
+
+(without boilerplate)
 
 It's strongly based on Redux so you should know how it works before start using this library.
 

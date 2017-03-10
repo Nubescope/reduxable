@@ -44,11 +44,9 @@ export default class Reduxable {
     if (!this._actions) {
       this._actions = {};
 
-      for (const reducer in this.reducers) {
-        if (this.reducers.hasOwnProperty(reducer)) {
-          const type = upperCase(reducer).replace(' ', '_');
-          const scope = this._scope;
-          this._actions[reducer] = action => ({ ...action, type, scope });
+      for (const reducerName in this.reducers) {
+        if (this.reducers.hasOwnProperty(reducerName)) {
+          this._actions[reducerName] = action => ({ ...action, type: reducerName, scope: this._scope });
         }
       }
     }
@@ -59,13 +57,11 @@ export default class Reduxable {
   get dispatchers() {
     if (!this._boundedActions) {
       this._boundedActions = {};
+      const dispatch = this.constructor._store.dispatch;
 
-      for (const reducer in this.reducers) {
-        if (this.reducers.hasOwnProperty(reducer)) {
-          const type = upperCase(reducer).replace(' ', '_');
-          const dispatch = this.constructor._store.dispatch;
-          const scope = this._scope;
-          this._boundedActions[reducer] = action => dispatch({ ...action, type, scope });
+      for (const reducerName in this.reducers) {
+        if (this.reducers.hasOwnProperty(reducerName)) {
+          this._boundedActions[reducerName] = action => dispatch({ ...action, type: reducerName, scope: this._scope });
         }
       }
     }

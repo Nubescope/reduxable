@@ -33,7 +33,11 @@ export default class Reduxable {
       const method = this.reducers[type];
 
       if (method) {
-        return method(state, action);
+        const newState = method(state, action);
+        if (typeof state === 'object' && state === newState) {
+          throw new Error('Reducer should never return the same `state` object');
+        }
+        return newState;
       }
 
       return state;

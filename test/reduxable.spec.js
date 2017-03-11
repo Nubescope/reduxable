@@ -120,5 +120,23 @@ describe('Reduxable', () => {
     });
   });
 
+  describe('actions', () => {
+    it('returns an action as plain object when calling an existent method', () => {
+      const counter = new Counter();
+      const incrementAction = counter.actions.increment();
+      expect(incrementAction).toEqual({ type: 'increment' });
+    });
+
+    it('throws an exception if method not exists', done => {
+      const counter = new Counter();
+      try {
+        counter.actions.notExistentMethod();
+      } catch (e) {
+        expect(e.message).toEqual('counter.actions.notExistentMethod is not a function');
+        done();
+      }
+    });
+  });
+
   describe('dispatchers', () => {});
 });

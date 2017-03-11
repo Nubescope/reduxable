@@ -1,6 +1,3 @@
-import camelCase from 'lodash/camelCase';
-import upperCase from 'lodash/upperCase';
-
 export default class Reduxable {
   static setStore(store) {
     this._store = store;
@@ -33,8 +30,7 @@ export default class Reduxable {
         return state;
       }
 
-      const type = camelCase(action.type);
-      const method = this.reducers[type];
+      const method = this.reducers[action.type];
 
       if (method) {
         const newState = method(state, action);

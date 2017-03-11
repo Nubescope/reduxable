@@ -47,16 +47,26 @@ class Counter extends Reduxable {
 }
 
 describe('Reduxable', () => {
-  // it('should work even if not connected to Redux', () => {
-  //   const x = new WithoutReducers();
-  //   expect(x.actions).toEqual({});
-  //   expect(x.dispatchers).toEqual({});
-  // });
+  it('should work without initialState', () => {
+    const x = new WithoutInitialState();
+    x.dispatchers.doNothing();
+  });
 
-  // it('should work without initialState', () => {
-  //   const x = new WithoutInitialState();
-  //   x.dispatchers.doNothing();
-  // });
+  it('should work even if not connected to Redux', () => {
+    const x = new WithoutReducers();
+    expect(x.actions).toEqual({});
+    expect(x.dispatchers).toEqual({});
+  });
+
+  it('could get state even if not connected to Redux', () => {
+    const counter = new Counter();
+    // const store = createStore(counter);
+    expect(counter.getState()).toEqual(0);
+    counter.increment();
+    expect(counter.getState()).toEqual(1);
+    counter.decrement();
+    expect(counter.getState()).toEqual(0);
+  });
 
   describe('createStore', () => {
     it('should work with a single Reduxable', () => {

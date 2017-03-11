@@ -15,6 +15,10 @@ export default class Reduxable {
   }
 
   getState() {
+    if (!this.constructor._store) {
+      return this._localState || this.initialState;
+    }
+
     let state = this.constructor._store.getState();
     if (!this._scope) {
       return state;
@@ -61,11 +65,13 @@ export default class Reduxable {
   get dispatchers() {
     if (!this._boundedActions) {
       this._boundedActions = {};
-      const dispatch = this.constructor._store.dispatch;
+      const dispatch = this.constructor._store ? this.constructor._store.dispatch : null;
 
       for (const reducerName in this.reducers) {
         if (this.reducers.hasOwnProperty(reducerName)) {
-          this._boundedActions[reducerName] = action => dispatch({ ...action, type: reducerName, scope: this._scope });
+          this._boundedActions[reducerName] = dispatch
+            ? action => dispatch({ ...action, type: reducerName, scope: this._scope })
+            : action => this._localState = this.reducers[reducerName](this.getState(), action);
         }
       }
     }

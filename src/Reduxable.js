@@ -25,15 +25,15 @@ export default class Reduxable {
   }
 
   getReducer() {
-    return (state = this.initialState, action) => {
-      if (action.scope !== this._scope) {
+    return (state = this.initialState, { type, scope, payload }) => {
+      if (scope !== this._scope) {
         return state;
       }
 
-      const method = this.reducers[action.type];
+      const method = this.reducers[type];
 
       if (method) {
-        const newState = method(state, action);
+        const newState = method(state, payload);
         if (typeof state === 'object' && state === newState) {
           throw new Error('Reducer should never return the same `state` object');
         }
@@ -50,7 +50,7 @@ export default class Reduxable {
 
       for (const reducerName in this.reducers) {
         if (this.reducers.hasOwnProperty(reducerName)) {
-          this._actions[reducerName] = action => ({ ...action, type: reducerName, scope: this._scope });
+          this._actions[reducerName] = payload => ({ payload, type: reducerName, scope: this._scope });
         }
       }
     }
@@ -66,8 +66,8 @@ export default class Reduxable {
       for (const reducerName in this.reducers) {
         if (this.reducers.hasOwnProperty(reducerName)) {
           this._boundedActions[reducerName] = dispatch
-            ? action => dispatch({ ...action, type: reducerName, scope: this._scope })
-            : action => this._localState = this.reducers[reducerName](this.getState(), action);
+            ? payload => dispatch({ payload, type: reducerName, scope: this._scope })
+            : payload => this._localState = this.reducers[reducerName](this.getState(), payload);
         }
       }
     }

@@ -42,11 +42,16 @@ class Counter extends Reduxable {
     return {
       increment: state => state + 1,
       decrement: state => state - 1,
+      add: (state, number) => state + number,
     };
   }
 }
 
 describe('Reduxable', () => {
+  beforeEach(() => {
+    Reduxable.setStore(undefined);
+  });
+
   it('should work without initialState', () => {
     const x = new WithoutInitialState();
     x.dispatchers.doNothing();
@@ -97,26 +102,36 @@ describe('Reduxable', () => {
 
     it('should NOT throw an error if same state is undefined', () => {
       const x = new WrongReducers();
-      const store = createStore(x);
-
       x.dispatchers.returnUndefined();
       x.dispatchers.returnUndefined();
     });
 
     it('should NOT throw an error if same state is a number', () => {
       const x = new WrongReducers();
-      const store = createStore(x);
-
       x.dispatchers.returnANumber();
       x.dispatchers.returnANumber();
     });
 
     it('should NOT throw an error if same state is a string', () => {
       const x = new WrongReducers();
-      const store = createStore(x);
+      x.dispatchers.returnAString();
+      x.dispatchers.returnAString();
+    });
+  });
 
-      x.dispatchers.returnAString();
-      x.dispatchers.returnAString();
+  describe('dispatchers', () => {
+    it('should be able to receive any type of parameter (not just objects)', () => {
+      const counter = new Counter();
+      counter.dispatchers.add(5);
+      expect(counter.getState()).toEqual(5);
+    });
+
+    it('should be able to receive any type of parameter connected with Redux', () => {
+      const counter = new Counter();
+      const store = createStore(counter);
+      counter.dispatchers.add(5);
+      expect(counter.getState()).toEqual(5);
+      expect(store.getState()).toEqual(5);
     });
   });
 
@@ -137,6 +152,4 @@ describe('Reduxable', () => {
       }
     });
   });
-
-  describe('dispatchers', () => {});
 });

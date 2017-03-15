@@ -26,16 +26,8 @@ class WithoutInitialState extends Reduxable {
 }
 
 class Counter extends Reduxable {
-  constructor() {
-    super();
-    this.initialState = 0;
-  }
-
-  increment() {
-    this.dispatchers.increment();
-  }
-  decrement() {
-    this.dispatchers.decrement();
+  get initialState() {
+    return 0;
   }
 
   get reducers() {
@@ -54,13 +46,12 @@ describe('Reduxable', () => {
 
   it('should work without initialState', () => {
     const x = new WithoutInitialState();
-    x.dispatchers.doNothing();
+    x.doNothing();
   });
 
   it('should work even if not connected to Redux', () => {
     const x = new WithoutReducers();
     expect(x.actions).toEqual({});
-    expect(x.dispatchers).toEqual({});
   });
 
   it('could get state even if not connected to Redux', () => {
@@ -94,7 +85,7 @@ describe('Reduxable', () => {
       const x = new WrongReducers();
       const store = createStore(x);
       try {
-        x.dispatchers.returnSameState();
+        x.returnSameState();
       } catch (e) {
         done();
       }
@@ -102,34 +93,34 @@ describe('Reduxable', () => {
 
     it('should NOT throw an error if same state is undefined', () => {
       const x = new WrongReducers();
-      x.dispatchers.returnUndefined();
-      x.dispatchers.returnUndefined();
+      x.returnUndefined();
+      x.returnUndefined();
     });
 
     it('should NOT throw an error if same state is a number', () => {
       const x = new WrongReducers();
-      x.dispatchers.returnANumber();
-      x.dispatchers.returnANumber();
+      x.returnANumber();
+      x.returnANumber();
     });
 
     it('should NOT throw an error if same state is a string', () => {
       const x = new WrongReducers();
-      x.dispatchers.returnAString();
-      x.dispatchers.returnAString();
+      x.returnAString();
+      x.returnAString();
     });
   });
 
   describe('dispatchers', () => {
     it('should be able to receive any type of parameter (not just objects)', () => {
       const counter = new Counter();
-      counter.dispatchers.add(5);
+      counter.add(5);
       expect(counter.getState()).toEqual(5);
     });
 
     it('should be able to receive any type of parameter connected with Redux', () => {
       const counter = new Counter();
       const store = createStore(counter);
-      counter.dispatchers.add(5);
+      counter.add(5);
       expect(counter.getState()).toEqual(5);
       expect(store.getState()).toEqual(5);
     });

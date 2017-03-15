@@ -1,15 +1,61 @@
 export default class Reduxable {
+  /*
+  *  The `_store` will be the Redux store. Since this store is unique by application, then we
+  *  can save _statically_ and use it across all the Reduxable instances.
+  *
+  *  We use this store internally on two Reduxable instance methods:
+  *    - `dispatch` to precisely dispatch the actions
+  *    - `getState` to retrieve the portion of state corredpondent to the Reduxable instance
+  *
+  *  This method is called from `createStore` method. See its documentation for more details.
+  */
+
   static setStore(store) {
     this._store = store;
   }
+
+  /*
+  *  The `_scope` will define where this Reduxable instance is placed on the global state tree
+  *
+  *  This scope will be set as a parameter in each dispacthed action and will be used to determine
+  *  whether or not an action should be catched by a reducer.
+  *
+  *  This method is called from `combineReducers` method. See its documentation for more details.
+  */
 
   setScope(scope) {
     this._scope = scope;
   }
 
   /*
-  *  If store exists, then call the store's `dispatch`
-  *  If not, apply the reducer to the local state
+  *  In the constructor we set a new method for each reducer.
+  *
+  *  When called, each method will dispatch an action with the convenient `type` and `scope`
+  *  so the reducer will catch this action.
+  *
+  *  ```
+  *  class ReduxableExample extends Reduxable {
+  *    reducers = {
+  *      foo: () => {}
+  *    }
+  *  }
+  *
+  *  const reduxableInstance = new ReduxableExample()
+  *  reduxableInstance.foo('hello world')
+  *  // Will dispatch an action like => { type: 'foo', payload: 'hello world', scope: '...' }
+  *  ```
+  */
+
+  constructor() {
+    for (const reducerName in this.actions) {
+      const actionForReducer = this.actions[reducerName];
+      this[reducerName] = payload => this.dispatch(actionForReducer(payload));
+    }
+  }
+
+  /*
+  *  If store has been already set, then call the store's `dispatch`
+  *  If not, apply the reducer to the current state and set it in `_localState`
   */
   dispatch(action) {
     const store = this.constructor._store;
@@ -108,33 +154,5 @@ export default class Reduxable {
     }
 
     return this._actions;
-  }
-
-  /*
-  *  Returns an object with methods that dispatch an action based on each reducer
-  *
-  *  ```
-  *  class ReduxableExample extends Reduxable {
-  *    reducers = {
-  *      foo: () => {}
-  *    }
-  *  }
-  *
-  *  const reduxableInstance = new ReduxableExample()
-  *  reduxableInstance.dispatchers.foo('hello world')
-  *  // Will dispatch an action like => { type: 'foo', payload: 'hello world', scope: '...' }
-  *  ```
-  */
-  get dispatchers() {
-    if (!this._dispatchers) {
-      this._dispatchers = {};
-
-      for (const reducerName in this.actions) {
-        const actionForReducer = this.actions[reducerName];
-        this._dispatchers[reducerName] = payload => this.dispatch(actionForReducer(payload));
-      }
-    }
-
-    return this._dispatchers;
   }
 }

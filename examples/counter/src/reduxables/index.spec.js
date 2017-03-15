@@ -1,6 +1,5 @@
 import CounterReduxion from './index';
-const counter = new CounterReduxion();
-const { increment, decrement } = counter.reducers;
+const { increment, decrement } = CounterReduxion.reducers;
 
 describe('reducers', () => {
   describe('increment', () => {

@@ -64,7 +64,7 @@ export default class Reduxable {
     }
 
     const { type, payload } = action;
-    this._localState = this.reducers[type](this.getState(), payload);
+    this._localState = this.constructor.reducers[type](this.getState(), payload);
   }
 
   /*
@@ -109,7 +109,7 @@ export default class Reduxable {
         return state;
       }
 
-      const method = this.reducers[type];
+      const method = this.constructor.reducers[type];
 
       if (method) {
         const newState = method(state, payload);
@@ -146,8 +146,8 @@ export default class Reduxable {
     if (!this._actions) {
       this._actions = {};
 
-      for (const reducerName in this.reducers) {
-        if (this.reducers.hasOwnProperty(reducerName)) {
+      for (const reducerName in this.constructor.reducers) {
+        if (this.constructor.reducers.hasOwnProperty(reducerName)) {
           this._actions[reducerName] = payload => ({ payload, type: reducerName, scope: this._scope });
         }
       }

@@ -7,7 +7,7 @@ class WrongReducers extends Reduxable {
     return {};
   }
 
-  get reducers() {
+  static get reducers() {
     return {
       returnUndefined: () => undefined,
       returnSameState: state => state,
@@ -18,7 +18,7 @@ class WrongReducers extends Reduxable {
 }
 
 class WithoutInitialState extends Reduxable {
-  get reducers() {
+  static get reducers() {
     return {
       doNothing() {},
     };
@@ -30,7 +30,7 @@ class Counter extends Reduxable {
     return 0;
   }
 
-  get reducers() {
+  static get reducers() {
     return {
       increment: state => state + 1,
       decrement: state => state - 1,

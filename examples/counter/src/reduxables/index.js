@@ -1,7 +1,7 @@
-import Reduxable, { Reducer } from 'reduxable';
+import Reduxable from 'reduxable';
 
 export default class CounterReduxable extends Reduxable {
-  state = 0;
+  initialState = 0;
 
   reducers = {
     increment: state => state + 1,

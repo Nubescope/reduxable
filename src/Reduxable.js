@@ -47,9 +47,10 @@ export default class Reduxable {
   */
 
   constructor() {
+    this.state = {};
     for (const reducerName in this.actions) {
       const actionForReducer = this.actions[reducerName];
-      this[reducerName] = payload => this.dispatch(actionForReducer(payload));
+      this.state[reducerName] = payload => this.dispatch(actionForReducer(payload));
     }
   }
 

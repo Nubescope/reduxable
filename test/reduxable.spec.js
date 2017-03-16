@@ -46,7 +46,7 @@ describe('Reduxable', () => {
 
   it('should work without initialState', () => {
     const x = new WithoutInitialState();
-    x.doNothing();
+    x.state.doNothing();
   });
 
   it('should work even if not connected to Redux', () => {
@@ -58,9 +58,9 @@ describe('Reduxable', () => {
     const counter = new Counter();
     // const store = createStore(counter);
     expect(counter.getState()).toEqual(0);
-    counter.increment();
+    counter.state.increment();
     expect(counter.getState()).toEqual(1);
-    counter.decrement();
+    counter.state.decrement();
     expect(counter.getState()).toEqual(0);
   });
 
@@ -68,12 +68,12 @@ describe('Reduxable', () => {
     it('should work with a single Reduxable', () => {
       const counter = new Counter();
       const store = createStore(counter);
-      counter.increment();
+      counter.state.increment();
 
       expect(counter.getState()).toEqual(1);
       expect(store.getState()).toEqual(1);
 
-      counter.decrement();
+      counter.state.decrement();
 
       expect(counter.getState()).toEqual(0);
       expect(store.getState()).toEqual(0);
@@ -85,7 +85,7 @@ describe('Reduxable', () => {
       const x = new WrongReducers();
       const store = createStore(x);
       try {
-        x.returnSameState();
+        x.state.returnSameState();
       } catch (e) {
         done();
       }
@@ -93,34 +93,34 @@ describe('Reduxable', () => {
 
     it('should NOT throw an error if same state is undefined', () => {
       const x = new WrongReducers();
-      x.returnUndefined();
-      x.returnUndefined();
+      x.state.returnUndefined();
+      x.state.returnUndefined();
     });
 
     it('should NOT throw an error if same state is a number', () => {
       const x = new WrongReducers();
-      x.returnANumber();
-      x.returnANumber();
+      x.state.returnANumber();
+      x.state.returnANumber();
     });
 
     it('should NOT throw an error if same state is a string', () => {
       const x = new WrongReducers();
-      x.returnAString();
-      x.returnAString();
+      x.state.returnAString();
+      x.state.returnAString();
     });
   });
 
   describe('dispatchers', () => {
     it('should be able to receive any type of parameter (not just objects)', () => {
       const counter = new Counter();
-      counter.add(5);
+      counter.state.add(5);
       expect(counter.getState()).toEqual(5);
     });
 
     it('should be able to receive any type of parameter connected with Redux', () => {
       const counter = new Counter();
       const store = createStore(counter);
-      counter.add(5);
+      counter.state.add(5);
       expect(counter.getState()).toEqual(5);
       expect(store.getState()).toEqual(5);
     });

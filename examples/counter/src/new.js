@@ -18,15 +18,11 @@ const rootEl = document.getElementById('root');
 
 const render = () => ReactDOM.render(
   <div>
-    <Counter
-      value={counter.getState()}
-      onIncrement={counter.dispatchers.increment}
-      onDecrement={counter.dispatchers.decrement}
-    />
+    <Counter value={counter.getState()} onIncrement={counter.state.increment} onDecrement={counter.state.decrement} />
     <Counter
       value={counter2.getState()}
-      onIncrement={counter2.dispatchers.increment}
-      onDecrement={counter2.dispatchers.decrement}
+      onIncrement={counter2.state.increment}
+      onDecrement={counter2.state.decrement}
     />
   </div>,
   rootEl,

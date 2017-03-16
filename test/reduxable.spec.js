@@ -81,16 +81,6 @@ describe('Reduxable', () => {
   });
 
   describe('reducers', () => {
-    it('should throw an error if same state object is returned', done => {
-      const x = new WrongReducers();
-      const store = createStore(x);
-      try {
-        x.state.returnSameState();
-      } catch (e) {
-        done();
-      }
-    });
-
     it('should NOT throw an error if same state is undefined', () => {
       const x = new WrongReducers();
       x.state.returnUndefined();

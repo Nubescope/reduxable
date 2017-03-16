@@ -1,4 +1,6 @@
 export default class Reduxable {
+  static showWarnings = true;
+
   /*
   *  The `_store` will be the Redux store. Since this store is unique by application, then we
   *  can save _statically_ and use it across all the Reduxable instances.
@@ -105,6 +107,8 @@ export default class Reduxable {
   *       (i.e the method did not mutate the previous state)
   */
   getReducer() {
+    const warn = this.constructor.showWarnings && console ? console.warn : () => {};
+
     return (state = this.initialState, { type, scope, payload }) => {
       if (scope !== this._scope) {
         return state;
@@ -115,7 +119,11 @@ export default class Reduxable {
       if (method) {
         const newState = method(state, payload);
         if (typeof state === 'object' && state === newState) {
-          throw new Error('Reducer should never return the same `state` object');
+          warn(
+            `Reducer '${type}' in scope '${scope}' is returning the same object.
+            If you are using Immutable this is nothing to worry about.
+            You can disable this with 'Reduxable.showWarnings = false'`,
+          );
         }
         return newState;
       }

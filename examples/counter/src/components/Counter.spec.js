@@ -5,17 +5,15 @@ import Counter from './Counter'
 function setup(value = 0) {
   const actions = {
     onIncrement: jest.fn(),
-    onDecrement: jest.fn()
+    onDecrement: jest.fn(),
   }
-  const component = shallow(
-    <Counter value={value} {...actions} />
-  )
+  const component = shallow(<Counter value={value} {...actions} />)
 
   return {
     component: component,
     actions: actions,
     buttons: component.find('button'),
-    p: component.find('p')
+    p: component.find('p'),
   }
 }
 
@@ -55,7 +53,7 @@ describe('Counter component', () => {
     expect(actions.onIncrement).toBeCalled()
   })
 
-  it('fourth button should call onIncrement in a second', (done) => {
+  it('fourth button should call onIncrement in a second', done => {
     const { buttons, actions } = setup()
     buttons.at(3).simulate('click')
     setTimeout(() => {

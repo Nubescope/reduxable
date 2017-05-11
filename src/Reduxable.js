@@ -19,10 +19,10 @@ class Reduxable {
   */
 
   constructor() {
-    this.state = {};
+    this.state = {}
     for (const reducerName in this.actions) {
-      const actionForReducer = this.actions[reducerName];
-      this.state[reducerName] = payload => this.dispatch(actionForReducer(payload));
+      const actionForReducer = this.actions[reducerName]
+      this.state[reducerName] = payload => this.dispatch(actionForReducer(payload))
     }
   }
 
@@ -39,7 +39,7 @@ class Reduxable {
   */
 
   static setStore(store) {
-    this._store = store;
+    this._store = store
   }
 
   /*
@@ -52,7 +52,7 @@ class Reduxable {
   */
 
   setScope(scope) {
-    this._scope = scope;
+    this._scope = scope
   }
 
   /*
@@ -60,13 +60,13 @@ class Reduxable {
   *  If not, apply the reducer to the current state and set it in `_localState`
   */
   dispatch(action) {
-    const store = this.constructor._store;
+    const store = this.constructor._store
     if (store) {
-      return store.dispatch(action);
+      return store.dispatch(action)
     }
 
-    const { type, payload } = action;
-    this._localState = this.constructor.reducers[type](this.getState(), payload);
+    const { type, payload } = action
+    this._localState = this.constructor.reducers[type](this.getState(), payload)
   }
 
   /*
@@ -84,15 +84,15 @@ class Reduxable {
   */
   getState() {
     if (!this.constructor._store) {
-      return this._localState || this.initialState;
+      return this._localState || this.initialState
     }
 
-    let state = this.constructor._store.getState();
+    let state = this.constructor._store.getState()
     if (!this._scope) {
-      return state;
+      return state
     }
 
-    return this._scope.split('.').reduce((object, scopeKey) => object[scopeKey], state);
+    return this._scope.split('.').reduce((object, scopeKey) => object[scopeKey], state)
   }
 
   /*
@@ -106,29 +106,29 @@ class Reduxable {
   *       (i.e the method did not mutate the previous state)
   */
   getReducer() {
-    const warn = this.constructor.showWarnings && console ? console.warn : () => {};
+    const warn = this.constructor.showWarnings && console ? console.warn : () => {}
 
     return (state = this.initialState, { type, scope, payload }) => {
       if (scope !== this._scope) {
-        return state;
+        return state
       }
 
-      const method = this.constructor.reducers[type];
+      const method = this.constructor.reducers[type]
 
       if (method) {
-        const newState = method(state, payload);
+        const newState = method(state, payload)
         if (typeof state === 'object' && state === newState) {
           warn(
             `Reducer '${type}' in scope '${scope}' is returning the same object.
             If you are using Immutable this is nothing to worry about.
             You can disable this with 'Reduxable.showWarnings = false'`,
-          );
+          )
         }
-        return newState;
+        return newState
       }
 
-      return state;
-    };
+      return state
+    }
   }
 
   /*
@@ -152,19 +152,19 @@ class Reduxable {
   */
   get actions() {
     if (!this._actions) {
-      this._actions = {};
+      this._actions = {}
 
       for (const reducerName in this.constructor.reducers) {
         if (this.constructor.reducers.hasOwnProperty(reducerName)) {
-          this._actions[reducerName] = payload => ({ payload, type: reducerName, scope: this._scope });
+          this._actions[reducerName] = payload => ({ payload, type: reducerName, scope: this._scope })
         }
       }
     }
 
-    return this._actions;
+    return this._actions
   }
 }
 
-Reduxable.showWarnings = true;
+Reduxable.showWarnings = true
 
-export default Reduxable;
+export default Reduxable

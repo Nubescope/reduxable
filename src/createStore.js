@@ -1,6 +1,6 @@
-import { createStore } from 'redux';
+import { createStore } from 'redux'
 
-import Reduxable from './Reduxable';
+import Reduxable from './Reduxable'
 
 /**
  * Creates a Redux store that holds the state tree.
@@ -16,10 +16,10 @@ export default function createStoreWithReduxables(reducer, ...args) {
   // TODO: check for Reduxable inhetirance properly
   //       Don't know why `reducer.constructor.prototype instanceof Reduxable` is not working
   if (reducer.getReducer) {
-    reducer = reducer.getReducer();
+    reducer = reducer.getReducer()
   }
 
-  const store = createStore(reducer, ...args);
-  Reduxable.setStore(store);
-  return store;
+  const store = createStore(reducer, ...args)
+  Reduxable.setStore(store)
+  return store
 }

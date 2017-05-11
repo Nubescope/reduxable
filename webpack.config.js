@@ -1,8 +1,8 @@
-'use strict';
+'use strict'
 
-var webpack = require('webpack');
+var webpack = require('webpack')
 
-var env = process.env.NODE_ENV;
+var env = process.env.NODE_ENV
 var config = {
   module: {
     loaders: [{ test: /\.js$/, loaders: ['babel-loader'], exclude: /node_modules/ }],
@@ -17,7 +17,7 @@ var config = {
       'process.env.NODE_ENV': JSON.stringify(env),
     }),
   ],
-};
+}
 
 if (env === 'production') {
   config.plugins.push(
@@ -35,8 +35,8 @@ if (env === 'production') {
       output: {
         screw_ie8: false,
       },
-    })
-  );
+    }),
+  )
 }
 
-module.exports = config;
+module.exports = config

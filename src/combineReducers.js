@@ -1,6 +1,6 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from 'redux'
 
-import Reduxable from './Reduxable';
+import Reduxable from './Reduxable'
 
 /**
  *
@@ -14,28 +14,28 @@ import Reduxable from './Reduxable';
 export default function combineReducersWithReduxables(reducers) {
   // TODO: check for Reduxable inhetirance properly
   //       Don't know why `reducer.constructor.prototype instanceof Reduxable` is not working
-  const newReducers = {};
+  const newReducers = {}
   Object.keys(reducers).forEach(key => {
-    const reducer = reducers[key];
+    const reducer = reducers[key]
     if (reducer.setScope) {
-      reducer.setScope(key);
+      reducer.setScope(key)
     }
 
     if (reducer.getReducer) {
-      newReducers[key] = reducer.getReducer();
+      newReducers[key] = reducer.getReducer()
     } else {
-      newReducers[key] = reducer;
+      newReducers[key] = reducer
     }
-  });
+  })
 
-  const reducer = combineReducers(newReducers);
+  const reducer = combineReducers(newReducers)
   reducer.setScope = scope => {
     Object.keys(reducers).forEach(key => {
-      const reducer = reducers[key];
+      const reducer = reducers[key]
       if (reducer.setScope) {
-        reducer.setScope(`${scope}.${key}`);
+        reducer.setScope(`${scope}.${key}`)
       }
-    });
-  };
-  return reducer;
+    })
+  }
+  return reducer
 }

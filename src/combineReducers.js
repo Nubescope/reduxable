@@ -17,14 +17,14 @@ export default function combineReducersWithReduxables(reducers) {
   const newReducers = {}
   Object.keys(reducers).forEach(key => {
     const reducer = reducers[key]
-    if (reducer.setScope) {
-      reducer.setScope(key)
-    }
-
-    if (reducer.getReducer) {
-      newReducers[key] = reducer.getReducer()
-    } else {
+    if (typeof reducer === 'function') {
       newReducers[key] = reducer
+    } else {
+      newReducers[key] = reducer.getReducer()
+
+      if (reducer.setScope) {
+        reducer.setScope(key)
+      }
     }
   })
 

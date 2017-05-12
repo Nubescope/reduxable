@@ -1,5 +1,3 @@
-import combineReducers from './combineReducers'
-
 class Reduxable {
   /*
   *  In the constructor we set a new method for each reducer.
@@ -21,15 +19,10 @@ class Reduxable {
   */
 
   constructor() {
-    if (!this.getReducer) {
-      throw new Error('You must define a `getReducer` method')
-    }
-
-    this.scopedReduce = this.getScopedReducer()
-
+    this.state = {}
     for (const reducerName in this.actions) {
       const actionForReducer = this.actions[reducerName]
-      this[reducerName] = payload => this.dispatch(actionForReducer(payload))
+      this.state[reducerName] = payload => this.dispatch(actionForReducer(payload))
     }
   }
 
@@ -115,60 +108,67 @@ class Reduxable {
   *    4) Check that the new state retrieved by that method is not the same
   *       (i.e the method did not mutate the previous state)
   */
-  reduce(state = this.initialState, action) {
-    return this.scopedReduce(state, action)
-  }
-
-  getScopedReducer() {
+  getReducer() {
     const warn = this.constructor.showWarnings && console ? console.warn : () => {}
-    let reducer = this.getReducer()
 
-    if (!reducer) {
-      throw new Error(
-        `Method 'getReducer' must retrieve a pure function, a Reduxable or an object of them.\n` +
-          `You are returning ${reducer === null ? 'null' : typeof reducer}`
-      )
-    }
-    // check reducer instance of Reduxable
-    if (reducer.getReducer) {
-      reducer = reducer.getReducer()
-    }
-
-    if (typeof reducer === 'object') {
-      if (Object.keys(reducer).length === 0) {
-        throw new Error(
-          `Method 'getReducer' must retrieve a pure function, a Reduxable or an object of them.\n` +
-            `You are returning an empty object`
-        )
+    return (state = this.initialState, { type, scope, payload }) => {
+      if (scope !== this._scope) {
+        return state
       }
-      reducer = combineReducers(reducer)
-    }
 
-    if (typeof reducer !== 'function') {
-      throw new Error(
-        `Method 'getReducer' must retrieve a pure function, a Reduxable or an object of them.\n` +
-          `You are returning ${typeof reducer}`
-      )
-    }
+      warn(`
+        DEPRECATED: 'reducers' are deprecated, you should use 'reduce' method instead. 
+        This will be removed for the next version.
+      `)
 
-    return (state = this.initialState, action = {}) => {
-      const { type, scope, payload } = action
+      const method = this.constructor.reducers[type]
 
-      if (reducer) {
-        const newState = reducer(state, action)
-        // TODO: check the method actually belongs to this Reduxable to show this warning
-        //
-        // if (typeof state === 'object' && state === newState) {
-        //   warn(`
-        //     Reducer '${type}' in scope '${scope}' is returning the same object.
-        //     If you are using Immutable this is nothing to worry about.
-        //     You can disable this with 'Reduxable.showWarnings = false'`)
-        // }
+      if (method) {
+        const newState = method(state, payload)
+        if (typeof state === 'object' && state === newState) {
+          warn(`
+            Reducer '${type}' in scope '${scope}' is returning the same object.
+            If you are using Immutable this is nothing to worry about.
+            You can disable this with 'Reduxable.showWarnings = false'`)
+        }
         return newState
       }
 
       return state
     }
+  }
+
+  /*
+  *  Returns an object with all the action creators for the defined reducers
+  *
+  *  This method will iterate over all the defined `reducers` and create a new
+  *  object of methods (action creators)
+  *
+  *  ```
+  *  class ReduxableExample extends Reduxable {
+  *    reducers = {
+  *      foo: () => {}
+  *    }
+  *  }
+  *
+  *  const reduxableInstance = new ReduxableExample()
+  *  const action = reduxableInstance.actions.foo('hello world')
+  *  console.log(action)
+  *  // { type: 'foo', payload: 'hello world', scope: '...' }
+  *  ```
+  */
+  get actions() {
+    if (!this._actions) {
+      this._actions = {}
+
+      for (const reducerName in this.constructor.reducers) {
+        if (this.constructor.reducers.hasOwnProperty(reducerName)) {
+          this._actions[reducerName] = payload => ({ payload, type: reducerName, scope: this._scope })
+        }
+      }
+    }
+
+    return this._actions
   }
 }
 

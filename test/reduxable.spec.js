@@ -1,40 +1,89 @@
 import Reduxable, { createStore } from '../src'
 
-class WithoutReducers extends Reduxable {}
+class WithoutGetReducer extends Reduxable {}
 
-class WrongReducers extends Reduxable {
-  get initialState() {
+class GetReducerReturningUndefined extends Reduxable {
+  getReducer() {
+    return
+  }
+}
+
+class GetReducerReturningNull extends Reduxable {
+  getReducer() {
+    return null
+  }
+}
+
+class GetReducerReturningNumber extends Reduxable {
+  getReducer() {
+    return 1
+  }
+}
+
+class GetReducerReturningString extends Reduxable {
+  getReducer() {
+    return 'foo'
+  }
+}
+
+class GetReducerReturningFunction extends Reduxable {
+  getReducer() {
+    return function() {}
+  }
+}
+
+class GetReducerReturningValidReduxable extends Reduxable {
+  getReducer() {
+    return new GetReducerReturningFunction()
+  }
+}
+
+class GetReducerReturningInvalidReduxable extends Reduxable {
+  getReducer() {
+    return new GetReducerReturningString()
+  }
+}
+
+class GetReducerReturningEmptyObject extends Reduxable {
+  getReducer() {
     return {}
   }
+}
 
-  static get reducers() {
+class GetReducerReturningValidObject extends Reduxable {
+  getReducer() {
     return {
-      returnUndefined: () => undefined,
-      returnSameState: state => state,
-      returnANumber: () => 100,
-      returnAString: () => 'Spinetta',
+      valid: new GetReducerReturningFunction(),
     }
   }
 }
 
-class WithoutInitialState extends Reduxable {
-  static get reducers() {
+class GetReducerReturningInvalidObject extends Reduxable {
+  getReducer() {
     return {
-      doNothing() {},
+      valid: new GetReducerReturningFunction(),
+      invalid: 'invalid member',
     }
   }
 }
 
-class Counter extends Reduxable {
-  get initialState() {
-    return 0
+class IdentityFunctionReduxable extends Reduxable {
+  getReducer() {
+    return (state = {}) => state
   }
+}
 
-  static get reducers() {
+class IdentityReduxableReduxable extends Reduxable {
+  getReducer() {
+    return new IdentityFunctionReduxable()
+  }
+}
+
+class ComposedObjectReduxable extends Reduxable {
+  getReducer() {
     return {
-      increment: state => state + 1,
-      decrement: state => state - 1,
-      add: (state, number) => state + number,
+      identityReduxable: new IdentityFunctionReduxable(),
+      identityFunction: (state = {}) => state,
     }
   }
 }
@@ -44,93 +93,75 @@ describe('Reduxable', () => {
     Reduxable.setStore(undefined)
   })
 
-  it('should work without initialState', () => {
-    const x = new WithoutInitialState()
-    x.state.doNothing()
-  })
+  describe('assertions', () => {
+    it('should throw error if has not `getReducer` method', () => {
+      expect(() => new WithoutGetReducer()).toThrowError('You must define a `getReducer` method')
+    })
 
-  it('should work even if not connected to Redux', () => {
-    const x = new WithoutReducers()
-    expect(x.actions).toEqual({})
-  })
+    it('should throw error if `getReducer` returns undefined', () => {
+      expect(() => new GetReducerReturningUndefined()).toThrowError(/You are returning undefined/)
+    })
 
-  it('could get state even if not connected to Redux', () => {
-    const counter = new Counter()
-    // const store = createStore(counter);
-    expect(counter.getState()).toEqual(0)
-    counter.state.increment()
-    expect(counter.getState()).toEqual(1)
-    counter.state.decrement()
-    expect(counter.getState()).toEqual(0)
-  })
+    it('should throw error if `getReducer` returns null', () => {
+      expect(() => new GetReducerReturningNull()).toThrowError(/You are returning null/)
+    })
 
-  describe('createStore', () => {
-    it('should work with a single Reduxable', () => {
-      const counter = new Counter()
-      const store = createStore(counter)
-      counter.state.increment()
+    it('should throw error if `getReducer` returns a number', () => {
+      expect(() => new GetReducerReturningNumber()).toThrowError(/You are returning number/)
+    })
 
-      expect(counter.getState()).toEqual(1)
-      expect(store.getState()).toEqual(1)
+    it('should throw error if `getReducer` returns a string', () => {
+      expect(() => new GetReducerReturningString()).toThrowError(/You are returning string/)
+    })
 
-      counter.state.decrement()
+    it('should pass if `getReducer` returns a function', () => {
+      new GetReducerReturningFunction()
+    })
 
-      expect(counter.getState()).toEqual(0)
-      expect(store.getState()).toEqual(0)
+    it('should pass if `getReducer` returns a valid Reduxable', () => {
+      new GetReducerReturningValidReduxable()
+    })
+
+    it('should throw error if `getReducer` returns an invalid Reduxable', () => {
+      expect(() => new GetReducerReturningInvalidReduxable()).toThrowError(/You are returning string/)
+    })
+
+    it('should throw error if `getReducer` returns an empty object', () => {
+      expect(() => new GetReducerReturningEmptyObject()).toThrowError(/You are returning an empty object/)
+    })
+
+    it('should pass if `getReducer` returns a valid object', () => {
+      new GetReducerReturningValidObject()
+    })
+
+    it('should throw error if `getReducer` returns an invalid object', () => {
+      expect(() => new GetReducerReturningInvalidObject()).toThrowError()
     })
   })
 
-  describe('reducers', () => {
-    it('should NOT throw an error if same state is undefined', () => {
-      const x = new WrongReducers()
-      x.state.returnUndefined()
-      x.state.returnUndefined()
+  describe('reduce method', () => {
+    it('should honor the function returned by the `getReducer` method', () => {
+      const reduxable = new IdentityFunctionReduxable()
+      expect(reduxable.reduce('TEST')).toEqual('TEST')
     })
 
-    it('should NOT throw an error if same state is a number', () => {
-      const x = new WrongReducers()
-      x.state.returnANumber()
-      x.state.returnANumber()
+    it('should honor the Reduxable returned by the `getReducer` method', () => {
+      const reduxable = new IdentityReduxableReduxable()
+      expect(reduxable.reduce('TEST')).toEqual('TEST')
     })
 
-    it('should NOT throw an error if same state is a string', () => {
-      const x = new WrongReducers()
-      x.state.returnAString()
-      x.state.returnAString()
-    })
-  })
-
-  describe('dispatchers', () => {
-    it('should be able to receive any type of parameter (not just objects)', () => {
-      const counter = new Counter()
-      counter.state.add(5)
-      expect(counter.getState()).toEqual(5)
-    })
-
-    it('should be able to receive any type of parameter connected with Redux', () => {
-      const counter = new Counter()
-      const store = createStore(counter)
-      counter.state.add(5)
-      expect(counter.getState()).toEqual(5)
-      expect(store.getState()).toEqual(5)
-    })
-  })
-
-  describe('actions', () => {
-    it('returns an action as plain object when calling an existent method', () => {
-      const counter = new Counter()
-      const incrementAction = counter.actions.increment()
-      expect(incrementAction).toEqual({ type: 'increment' })
-    })
-
-    it('throws an exception if method not exists', done => {
-      const counter = new Counter()
-      try {
-        counter.actions.notExistentMethod()
-      } catch (e) {
-        expect(e.message).toEqual('counter.actions.notExistentMethod is not a function')
-        done()
-      }
+    it('should honor all the reducers/reduxables returned by the `getReducer` method', () => {
+      const reduxable = new ComposedObjectReduxable()
+      expect(reduxable.reduce()).toEqual({ identityReduxable: {}, identityFunction: {} })
+      expect(
+        reduxable.reduce({
+          identityReduxable: 'TEST_1',
+          identityFunction: 'TEST_2',
+        })
+      ).toEqual({
+        identityReduxable: 'TEST_1',
+        identityFunction: 'TEST_2',
+      })
     })
   })
 })

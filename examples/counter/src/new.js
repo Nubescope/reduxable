@@ -11,7 +11,7 @@ const store = createStore(
   combineReducers({
     counter,
     counter2,
-  }),
+  })
 )
 
 const rootEl = document.getElementById('root')
@@ -19,14 +19,10 @@ const rootEl = document.getElementById('root')
 const render = () =>
   ReactDOM.render(
     <div>
-      <Counter value={counter.getState()} onIncrement={counter.state.increment} onDecrement={counter.state.decrement} />
-      <Counter
-        value={counter2.getState()}
-        onIncrement={counter2.state.increment}
-        onDecrement={counter2.state.decrement}
-      />
+      <Counter value={counter.getState()} onIncrement={counter.increment} onDecrement={counter.decrement} />
+      <Counter value={counter2.getState()} onIncrement={counter2.increment} onDecrement={counter2.decrement} />
     </div>,
-    rootEl,
+    rootEl
   )
 
 render()

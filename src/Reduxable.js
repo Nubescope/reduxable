@@ -1,36 +1,17 @@
 import combineReducers from './combineReducers'
+import { assertReducersObject, assertState } from './assertions'
 
 class Reduxable {
   /*
-  *  In the constructor we set a new method for each reducer.
-  *
-  *  When called, each method will dispatch an action with the convenient `type` and `scope`
-  *  so the reducer will catch this action.
-  *
-  *  ```
-  *  class ReduxableExample extends Reduxable {
-  *    reducers = {
-  *      foo: () => {}
-  *    }
-  *  }
-  *
-  *  const reduxableInstance = new ReduxableExample()
-  *  reduxableInstance.foo('hello world')
-  *  // Will dispatch an action like => { type: 'foo', payload: 'hello world', scope: '...' }
-  *  ```
   */
 
-  constructor() {
-    if (!this.getReducer) {
-      throw new Error('You must define a `getReducer` method')
-    }
+  constructor(reducers = this.constructor.reducers, state = this.constructor.state) {
+    assertReducersObject(reducers)
+    assertState(state)
 
-    this.scopedReduce = this.getScopedReducer()
-
-    for (const reducerName in this.actions) {
-      const actionForReducer = this.actions[reducerName]
-      this[reducerName] = payload => this.dispatch(actionForReducer(payload))
-    }
+    this._setupReducers(reducers)
+    this.state = state
+    this.reduce = this.getReducer()
   }
 
   /*
@@ -39,7 +20,6 @@ class Reduxable {
   *
   *  We use this store internally on two Reduxable instance methods:
   *    - `dispatch` to precisely dispatch the actions
-    this.constructor.showWarnings = true
   *    - `getState` to retrieve the portion of state corredpondent to the Reduxable instance
   *
   *  This method is called from `createStore` method. See its documentation for more details.
@@ -63,23 +43,6 @@ class Reduxable {
   }
 
   /*
-  *  If store has been already set, then call the store's `dispatch`
-  *  If not, apply the reducer to the current state and set it in `_localState`
-  */
-  dispatch(action) {
-    const store = this.constructor._store
-    if (store) {
-      return store.dispatch(action)
-    }
-
-    const { type, payload } = action
-
-    this._localState = this.reduce
-      ? this.reduce(this.getState(), action)
-      : this.constructor.reducers[type](this.getState(), payload)
-  }
-
-  /*
   *  Returns the state for this particular scope
   *
   *  Given the following structure for a Redux store
@@ -94,9 +57,8 @@ class Reduxable {
   */
   getState() {
     if (!this.constructor._store) {
-      return this._localState || this.initialState
+      return this.state
     }
-
     let state = this.constructor._store.getState()
     if (!this._scope) {
       return state
@@ -115,63 +77,60 @@ class Reduxable {
   *    4) Check that the new state retrieved by that method is not the same
   *       (i.e the method did not mutate the previous state)
   */
-  reduce(state = this.initialState, action) {
-    return this.scopedReduce(state, action)
-  }
 
-  getScopedReducer() {
-    const warn = this.constructor.showWarnings && console ? console.warn : () => {}
-    let reducer = this.getReducer()
-
-    if (!reducer) {
-      throw new Error(
-        `Method 'getReducer' must retrieve a pure function, a Reduxable or an object of them.\n` +
-          `You are returning ${reducer === null ? 'null' : typeof reducer}`
-      )
-    }
-    // check reducer instance of Reduxable
-    if (reducer.getReducer) {
-      reducer = reducer.getReducer()
-    }
-
-    if (typeof reducer === 'object') {
-      if (Object.keys(reducer).length === 0) {
-        throw new Error(
-          `Method 'getReducer' must retrieve a pure function, a Reduxable or an object of them.\n` +
-            `You are returning an empty object`
-        )
+  getReducer() {
+    return (state = this.state, { type, scope, payload }) => {
+      if (scope !== this._scope) {
+        return state
       }
-      reducer = combineReducers(reducer)
-    }
 
-    if (typeof reducer !== 'function') {
-      throw new Error(
-        `Method 'getReducer' must retrieve a pure function, a Reduxable or an object of them.\n` +
-          `You are returning ${typeof reducer}`
-      )
-    }
+      const method = this.reducers[type]
 
-    return (state = this.initialState, action = {}) => {
-      const { type, scope, payload } = action
-
-      if (reducer) {
-        const newState = reducer(state, action)
-        // TODO: check the method actually belongs to this Reduxable to show this warning
-        //
-        // if (typeof state === 'object' && state === newState) {
-        //   warn(`
-        //     Reducer '${type}' in scope '${scope}' is returning the same object.
-        //     If you are using Immutable this is nothing to worry about.
-        //     You can disable this with 'Reduxable.showWarnings = false'`)
-        // }
-        return newState
+      if (method) {
+        return method(state, payload)
+      } else {
+        // TODO: should we show a warning here? I think this shouldn't be reached never
       }
 
       return state
     }
   }
-}
 
-Reduxable.showWarnings = true
+  /*
+  *  This method will:
+  *  1) store the `reducers`
+  *  2) define a method for each reducer that will call the reducer 
+  *     See the `_callReducer` method for more info
+  *
+  */
+
+  _setupReducers(reducers) {
+    this.reducers = reducers
+
+    // TODO: we should check there is no existing method
+    for (const reducerName in reducers) {
+      if (reducers.hasOwnProperty(reducerName)) {
+        this[reducerName] = payload => this._callReducer(reducerName, payload)
+      }
+    }
+  }
+
+  /*
+  *  This method will _call the reducer_ in two different ways
+  *  - If it is connected to Redux, will dispatch an action for that reducer
+  *  - If not, will apply the reducer directly an store the new state locally
+  *
+  */
+
+  _callReducer(reducerName, payload) {
+    const store = this.constructor._store
+
+    if (store) {
+      return store.dispatch({ type: reducerName, scope: this._scope, payload })
+    }
+
+    this.state = this.reducers[reducerName](this.getState(), payload)
+  }
+}
 
 export default Reduxable

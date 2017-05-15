@@ -12,12 +12,10 @@ import Reduxable from './Reduxable'
  * and subscribe to changes.
  */
 
-export default function createStoreWithReduxables(reducer, ...args) {
+export default function createStoreWithReduxables(reduxable, ...args) {
   // TODO: check for Reduxable inhetirance properly
-  //       Don't know why `reducer.constructor.prototype instanceof Reduxable` is not working
-  if (reducer.getReducer) {
-    reducer = reducer.getReducer()
-  }
+  //       Don't know why `reduxable.constructor.prototype instanceof Reduxable` is not working
+  const reducer = typeof reduxable === 'function' ? reduxable : reduxable.reduce
 
   const store = createStore(reducer, ...args)
   Reduxable.setStore(store)

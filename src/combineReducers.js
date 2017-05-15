@@ -20,7 +20,7 @@ export default function combineReducersWithReduxables(reducers) {
     if (typeof reducer === 'function') {
       newReducers[key] = reducer
     } else {
-      newReducers[key] = reducer.getReducer()
+      newReducers[key] = reducer.reduce
 
       if (reducer.setScope) {
         reducer.setScope(key)

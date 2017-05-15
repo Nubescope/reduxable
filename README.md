@@ -1,8 +1,6 @@
 # Reduxable
 
-Reusable Redux
-
-(without boilerplate)
+Reusable Redux (and without boilerplate)
 
 It's strongly based on Redux so you should know how it works before start using this library.
 
@@ -12,6 +10,8 @@ To install the stable version:
 
 ```
 npm install --save reduxable
+// or
+yarn add reduxable
 ```
 
 ### Motivation
@@ -32,9 +32,29 @@ But there are some issues that Redux does not solve:
 
 - It's really difficult to reuse the code due to the global scope: the action types could collide
 - We need to create a lot of boilerplate even for a tiny feature
-- It's hard to refactor the code since to the lack of cohesion
 
-Reduxable tackle all of this and aims to do it in an elegant way.
+Reduxable tackle both and aims to do it in an elegant way.
+
+### Usage
+
+Reduxable constructor takes the **reducers** as the first parameter and the **initial state** as the second one.
+```js
+const counter = new Reduxable({
+  increment: state => state + 1,
+  decrement: state => state - 1,
+}, 0)
+```
+
+Once defined you can _**call the reducers**_ (i.e. dispatch an action) doing
+```js
+counter.increment()
+counter.decrement()
+```
+
+To connect them with an existing Redux application, all you have to do is to replace the `combineReducers` and `createStore` imports to get them from `reduxable` instead of `redux`
+```js
+import { createStore, combineReducers } from 'reduxable'
+```
 
 ### Examples
 

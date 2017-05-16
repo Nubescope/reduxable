@@ -13,7 +13,7 @@ let AddTodo = ({ dispatch }) => {
           if (!input.value.trim()) {
             return
           }
-          app.todos.addTodo(input.value)
+          app.addTodo(input.value)
           input.value = ''
         }}
       >

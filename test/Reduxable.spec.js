@@ -196,5 +196,22 @@ describe('Reduxable', () => {
         expect(counter.getState()).toEqual(1)
       })
     })
+
+    describe('methods assertions', () => {
+      it('should throw error if method name and reducer name collide', () => {
+        class InvalidReduxable extends Reduxable {
+          constructor() {
+            super({ increment: state => state + 1 }, 0)
+          }
+
+          increment() {}
+        }
+
+        expect(() => new InvalidReduxable()).toThrowError(
+          `You are defining a reducer and a method with the same name 'increment'.\n` +
+            `You need to change the reducer or the method name.`
+        )
+      })
+    })
   })
 })

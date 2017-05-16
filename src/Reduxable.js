@@ -1,5 +1,5 @@
 import combineReducers from './combineReducers'
-import { assertReducersObject, assertState } from './assertions'
+import { assertReducersObject, assertState, assertReducerName } from './assertions'
 
 class Reduxable {
   /*
@@ -80,7 +80,7 @@ class Reduxable {
 
   getReducer() {
     return (state = this.state, { type, scope, payload }) => {
-      if (scope !== this._scope) {
+      if (!this.constructor.global && scope !== this._scope) {
         return state
       }
 
@@ -107,9 +107,9 @@ class Reduxable {
   _setupReducers(reducers) {
     this.reducers = reducers
 
-    // TODO: we should check there is no existing method
     for (const reducerName in reducers) {
       if (reducers.hasOwnProperty(reducerName)) {
+        assertReducerName(this, reducerName)
         this[reducerName] = payload => this._callReducer(reducerName, payload)
       }
     }

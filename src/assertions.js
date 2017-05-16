@@ -29,3 +29,30 @@ export function assertState(state) {
     )
   }
 }
+
+export function assertReducerName(reduxable, reducerName) {
+  if (reduxable[reducerName] !== undefined) {
+    throw new Error(
+      `You are defining a reducer and a method with the same name '${reducerName}'.\n` +
+        `You need to change the reducer or the method name.`
+    )
+  }
+}
+
+export function assertReduxableSetChildren(children) {
+  if (children === null) {
+    throw new Error(`The children must be an object and it is 'null'`)
+  }
+
+  if (!children) {
+    throw new Error(`You must provide the children as the first parameter of ReduxableSet constructor`)
+  }
+
+  if (typeof children !== 'object') {
+    throw new Error(`The children must be an object and it is '${children}'`)
+  }
+
+  if (Object.keys(children).length === 0) {
+    throw new Error(`The children must not be empty`)
+  }
+}

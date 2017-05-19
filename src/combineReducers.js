@@ -28,14 +28,5 @@ export default function combineReducersWithReduxables(reducers) {
     }
   })
 
-  const reducer = combineReducers(newReducers)
-  reducer.setScope = scope => {
-    Object.keys(reducers).forEach(key => {
-      const reducer = reducers[key]
-      if (reducer.setScope) {
-        reducer.setScope(`${scope}.${key}`)
-      }
-    })
-  }
-  return reducer
+  return combineReducers(newReducers)
 }

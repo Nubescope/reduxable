@@ -38,6 +38,11 @@ class ReduxableSet {
 
   setScope(scope) {
     this._scope = scope
+
+    Object.keys(this.children).forEach(key => {
+      const child = this.children[key]
+      child.setScope && child.setScope(`${scope}.${key}`)
+    })
   }
 
   /*

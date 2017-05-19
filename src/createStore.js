@@ -1,6 +1,8 @@
 import { createStore } from 'redux'
 
 import Reduxable from './Reduxable'
+import GlobalReduxable from './GlobalReduxable'
+import ReduxableSet from './ReduxableSet'
 
 /**
  * Creates a Redux store that holds the state tree.
@@ -19,5 +21,7 @@ export default function createStoreWithReduxables(reduxable, ...args) {
 
   const store = createStore(reducer, ...args)
   Reduxable.setStore(store)
+  GlobalReduxable.setStore(store)
+  ReduxableSet.setStore(store)
   return store
 }

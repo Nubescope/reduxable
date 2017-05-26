@@ -1,17 +1,35 @@
 import combineReducers from './combineReducers'
-import { assertReducersObject, assertState, assertReducerName } from './assertions'
+import { assertReducersObject, assertState, assertChildName, assertReducerName } from './assertions'
+
+function isAReduxableSet(state) {
+  if (!state || typeof state !== 'object') {
+    return false
+  }
+
+  const firstChild = state[Object.keys(state)[0]]
+  return typeof firstChild === 'function' || (firstChild.reduce && typeof firstChild.reduce === 'function')
+}
 
 class Reduxable {
   /*
+  * The Reduxable constructor receives
+  * @param {any} state - Can be an object with other reduxables/reducers or any
+  * @param {Object} reducers - An object with pure functions
   */
 
-  constructor(reducers = this.constructor.reducers, state = this.constructor.state) {
-    assertReducersObject(reducers)
+  constructor(state = this.constructor.state, reducers = this.constructor.reducers) {
     assertState(state)
 
-    this._setupReducers(reducers)
-    this.state = state
-    this.reduce = this.getReducer()
+    if (isAReduxableSet(state)) {
+      // TODO: assert valid reduxable set
+      this._setupChildren(state)
+      this.reduce = combineReducers(state)
+    } else {
+      assertReducersObject(reducers)
+      this._setupReducers(reducers)
+      this.state = state
+      this.reduce = this.getReducer()
+    }
   }
 
   /*
@@ -40,6 +58,13 @@ class Reduxable {
 
   setScope(scope) {
     this._scope = scope
+
+    if (this.children) {
+      Object.keys(this.children).forEach(key => {
+        const child = this.children[key]
+        child.setScope && child.setScope(`${scope}.${key}`)
+      })
+    }
   }
 
   /*
@@ -80,7 +105,7 @@ class Reduxable {
 
   getReducer() {
     return (state = this.state, { type, scope, payload }) => {
-      if (!this.constructor.global && scope !== this._scope) {
+      if (!this.constructor._global && scope !== this._scope) {
         return state
       }
 
@@ -111,6 +136,20 @@ class Reduxable {
       if (reducers.hasOwnProperty(reducerName)) {
         assertReducerName(this, reducerName)
         this[reducerName] = payload => this._callReducer(reducerName, payload)
+      }
+    }
+  }
+
+  /*
+  *  This method will setup the state as properties
+  */
+  _setupChildren(children) {
+    this.children = children
+
+    for (const childName in children) {
+      if (children.hasOwnProperty(childName)) {
+        assertChildName(this, childName)
+        this[childName] = children[childName]
       }
     }
   }

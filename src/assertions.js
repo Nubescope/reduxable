@@ -6,8 +6,8 @@ export function assertReducersObject(reducers) {
   if (!reducers) {
     throw new Error(
       `You must provide the 'reducers' as:\n` +
-        ` - the first parameter of Reduxable constructor\n` +
-        ` - setting the static 'reducers' to your class`
+        ` - the second parameter of Reduxable constructor\n` +
+        ` - setting the static 'reducers' to your class`,
     )
   }
 
@@ -24,8 +24,8 @@ export function assertState(state) {
   if (state === undefined) {
     throw new Error(
       `You must provide the 'initial state' as:\n` +
-        ` - the second parameter of Reduxable constructor\n` +
-        ` - setting the static 'state' to your class`
+        ` - the first parameter of Reduxable constructor\n` +
+        ` - setting the static 'state' to your class`,
     )
   }
 }
@@ -34,7 +34,16 @@ export function assertReducerName(reduxable, reducerName) {
   if (reduxable[reducerName] !== undefined) {
     throw new Error(
       `You are defining a reducer and a method with the same name '${reducerName}'.\n` +
-        `You need to change the reducer or the method name.`
+        `You need to change the reducer or the method name.`,
+    )
+  }
+}
+
+export function assertChildName(reduxable, stateChildName) {
+  if (reduxable[stateChildName] !== undefined) {
+    throw new Error(
+      `You are defining a state child and a method with the same name '${stateChildName}'.\n` +
+        `You need to change the state child or the method name.`,
     )
   }
 }

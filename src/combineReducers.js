@@ -1,7 +1,5 @@
 import { combineReducers } from 'redux'
 
-import Reduxable from './Reduxable'
-
 /**
  *
  * The only difference with Redux's `combineReducers` is that it also recognizes

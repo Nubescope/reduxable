@@ -45,20 +45,47 @@ const counter = new Reduxable({
 }, 0)
 ```
 
-Once defined you can _**call the reducers**_ (i.e. dispatch an action) doing
+Once defined you can _**call the reducers**_ (i.e. dispatch an action), the state will be bound automatically.
 ```js
 counter.increment()
 counter.decrement()
 ```
 
+### Connecting with Redux
+
 To connect them with an existing Redux application, all you have to do is to replace the `combineReducers` and `createStore` imports to get them from `reduxable` instead of `redux`
 ```js
 import { createStore, combineReducers } from 'reduxable'
+import traditionalCounter from './reducers/counter'
+import reduxableCounter from './reduxables/counter'
+
+const mainReducer = combineReducers({
+  reduxableCounter,
+  traditionalCounter
+})
+
+const store = createStore(mainReducer)
+```
+
+Or if you want to go _all in_
+```js
+import { createStore } from 'reduxable'
+import traditionalCounter from './reducers/counter'
+import reduxableCounter from './reduxables/counter'
+
+const myApp = new Reduxable({
+  reduxableCounter,
+  traditionalCounter
+})
+
+const store = createStore(myApp)
 ```
 
 ### Examples
 
 * [Counter](https://github.com/underscopeio/reduxable/tree/master/examples/counter)
+* [Todos](https://github.com/underscopeio/reduxable/tree/master/examples/todos)
+* [Multiple Todos](https://github.com/underscopeio/reduxable/tree/master/examples/multiple-todos)
 
 ### Change Log
 

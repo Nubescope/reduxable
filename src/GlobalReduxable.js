@@ -1,6 +1,6 @@
 import Reduxable from './Reduxable'
 
 class GlobalReduxable extends Reduxable {}
-GlobalReduxable.global = true
+GlobalReduxable._global = true
 
 export default GlobalReduxable

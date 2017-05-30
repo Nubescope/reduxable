@@ -39,6 +39,8 @@ Reduxable tackle both and aims to do it in an elegant way.
 
 Reduxable constructor takes the **reducers** as the first parameter and the **initial state** as the second one.
 ```js
+import Reduxable from 'reduxable'
+
 const counter = new Reduxable({
   increment: state => state + 1,
   decrement: state => state - 1,
@@ -69,7 +71,7 @@ const store = createStore(mainReducer)
 
 Or if you want to go _all in_
 ```js
-import { createStore } from 'reduxable'
+import Reduxable, { createStore } from 'reduxable'
 import traditionalCounter from './reducers/counter'
 import reduxableCounter from './reduxables/counter'
 

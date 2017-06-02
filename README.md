@@ -8,10 +8,12 @@ It's strongly based on Redux so you should know how it works before start using 
 
 To install the stable version:
 
+```bash
+$ npm install --save reduxable
 ```
-npm install --save reduxable
-// or
-yarn add reduxable
+or with Yarn
+```bash
+$ yarn add reduxable
 ```
 
 ### Motivation

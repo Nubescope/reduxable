@@ -19,7 +19,7 @@ export default function createStoreWithReduxables(reduxable, ...args) {
   const reducer = typeof reduxable === 'function' ? reduxable : reduxable.reduce
 
   const store = createStore(reducer, ...args)
-  Reduxable.setStore(store)
-  GlobalReduxable.setStore(store)
+  Reduxable._setStore(store)
+  GlobalReduxable._setStore(store)
   return store
 }

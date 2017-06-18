@@ -1,6 +1,8 @@
 import combineReducers from './combineReducers'
 import { assertReducersObject, assertState, assertChildName, assertReducerName } from './assertions'
 
+import warning from './utils/warning'
+
 function isAReduxableSet(state) {
   if (!state || typeof state !== 'object') {
     return false
@@ -27,8 +29,8 @@ class Reduxable {
     } else {
       assertReducersObject(reducers)
       this._setupReducers(reducers)
-      this.state = state
-      this.reduce = this.getReducer()
+      this._state = state
+      this.reduce = this._getReducer()
     }
   }
 
@@ -43,7 +45,7 @@ class Reduxable {
   *  This method is called from `createStore` method. See its documentation for more details.
   */
 
-  static setStore(store) {
+  static _setStore(store) {
     this._store = store
   }
 
@@ -56,18 +58,28 @@ class Reduxable {
   *  This method is called from `combineReducers` method. See its documentation for more details.
   */
 
-  setScope(scope) {
+  _setScope(scope) {
     this._scope = scope
 
     if (this.children) {
       Object.keys(this.children).forEach(key => {
         const child = this.children[key]
-        child.setScope && child.setScope(`${scope}.${key}`)
+        child._setScope && child._setScope(`${scope}.${key}`)
       })
     }
   }
 
   /*
+  *  Alias for `state` getter to keep the same method that Redux
+  */
+
+  getState() {
+    return this.state
+  }
+
+  /*
+  *  `state` getter
+  *  ------------
   *  Returns the state for this particular scope
   *
   *  Given the following structure for a Redux store
@@ -80,16 +92,27 @@ class Reduxable {
   *
   *  Then `thisReduxableInstance.getState()` will return `reduxStore.getState().a.b`
   */
-  getState() {
+
+  get state() {
     if (!this.constructor._store) {
-      return this.state
+      return this._state
     }
-    let state = this.constructor._store.getState()
+    let rootState = this.constructor._store.getState()
     if (!this._scope) {
-      return state
+      return rootState
     }
 
-    return this._scope.split('.').reduce((object, scopeKey) => object[scopeKey], state)
+    return this._scope.split('.').reduce((object, scopeKey) => object[scopeKey], rootState)
+  }
+
+  /*
+  *  `state` setter
+  *  ------------
+  *  Will set the state if not already set
+  */
+
+  set state(newState) {
+    warning(`You can not set the state directly. You need to call a reducer to mutate the state`)
   }
 
   /*
@@ -103,7 +126,7 @@ class Reduxable {
   *       (i.e the method did not mutate the previous state)
   */
 
-  getReducer() {
+  _getReducer() {
     return (state = this.state, { type, scope, payload }) => {
       if (!this.constructor._global && scope !== this._scope) {
         return state
@@ -168,7 +191,7 @@ class Reduxable {
       return store.dispatch({ type: reducerName, scope: this._scope, payload })
     }
 
-    this.state = this.reducers[reducerName](this.getState(), payload)
+    this._state = this.reducers[reducerName](this.state, payload)
   }
 }
 

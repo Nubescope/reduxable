@@ -3,13 +3,13 @@ import GlobalReduxable from '../src/GlobalReduxable'
 
 describe('GlobalReduxable', () => {
   beforeEach(() => {
-    Reduxable.setStore(undefined)
-    GlobalReduxable.setStore(undefined)
+    Reduxable._setStore(undefined)
+    GlobalReduxable._setStore(undefined)
   })
 
   afterAll(() => {
-    Reduxable.setStore(undefined)
-    GlobalReduxable.setStore(undefined)
+    Reduxable._setStore(undefined)
+    GlobalReduxable._setStore(undefined)
   })
 
   describe('combined with scoped reduxables', () => {
@@ -17,7 +17,7 @@ describe('GlobalReduxable', () => {
       const globalCounter1 = new GlobalReduxable(0, { increment: state => state + 1 })
       const globalCounter2 = new GlobalReduxable(0, { increment: state => state + 1 })
       const store = createStore(combineReducers({ globalCounter1, globalCounter2 }))
-      GlobalReduxable.setStore(store)
+      GlobalReduxable._setStore(store)
 
       globalCounter1.increment()
       expect(store.getState()).toEqual({ globalCounter1: 1, globalCounter2: 1 })
@@ -32,8 +32,8 @@ describe('GlobalReduxable', () => {
       const scopedCounter = new Reduxable(0, { increment: state => state + 1 })
       const globalCounter = new GlobalReduxable(0, { increment: state => state + 1 })
       const store = createStore(combineReducers({ scopedCounter, globalCounter }))
-      Reduxable.setStore(store)
-      GlobalReduxable.setStore(store)
+      Reduxable._setStore(store)
+      GlobalReduxable._setStore(store)
 
       scopedCounter.increment()
       expect(scopedCounter.getState()).toEqual(1)

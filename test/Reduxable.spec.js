@@ -29,7 +29,7 @@ const counterReducerFunction = (state = 0, action) => {
 
 describe('Reduxable', () => {
   beforeEach(() => {
-    Reduxable.setStore(undefined)
+    Reduxable._setStore(undefined)
   })
 
   describe('constructor assertions', () => {
@@ -85,7 +85,7 @@ describe('Reduxable', () => {
       const reducers = { addLetter: state => state + 'A' }
       const reduxable = new Reduxable('SOME_INITIAL_STATE', reducers)
       const store = createStore(reduxable)
-      Reduxable.setStore(store)
+      Reduxable._setStore(store)
 
       expect(reduxable.getState()).toEqual('SOME_INITIAL_STATE')
       expect(store.getState()).toEqual('SOME_INITIAL_STATE')
@@ -110,7 +110,7 @@ describe('Reduxable', () => {
     it('should modify the state connected with Redux', () => {
       const counter = new Reduxable(10, { increment: state => state + 1 })
       const store = createStore(counter)
-      Reduxable.setStore(store)
+      Reduxable._setStore(store)
 
       counter.increment()
       expect(counter.getState()).toEqual(11)
@@ -121,7 +121,7 @@ describe('Reduxable', () => {
     it('should work together with combineReducers', () => {
       const counter = new Reduxable(20, { increment: state => state + 1 })
       const store = createStore(combineReducers({ counter }))
-      Reduxable.setStore(store)
+      Reduxable._setStore(store)
 
       counter.increment()
       expect(counter.getState()).toEqual(21)
@@ -132,7 +132,7 @@ describe('Reduxable', () => {
       const counter1 = new Reduxable(0, { increment: state => state + 1 })
       const counter2 = new Reduxable(5, { increment: state => state + 1 })
       const store = createStore(combineReducers({ counter1, counter2 }))
-      Reduxable.setStore(store)
+      Reduxable._setStore(store)
 
       counter1.increment()
       expect(counter1.getState()).toEqual(1)
@@ -247,7 +247,7 @@ describe('Reduxable', () => {
       })
 
       const store = createStore(reduxableSet)
-      Reduxable.setStore(store)
+      Reduxable._setStore(store)
 
       expect(reduxableSet.getState()).toEqual({ counterOne: 0, counterTwo: 0 })
       expect(reduxableSet.counterOne.getState()).toEqual(0)
@@ -271,7 +271,7 @@ describe('Reduxable', () => {
       })
 
       const store = createStore(reduxableSet)
-      Reduxable.setStore(store)
+      Reduxable._setStore(store)
 
       expect(reduxableSet.getState()).toEqual({ counterOne: 0, counterTwo: 0 })
 
@@ -293,7 +293,7 @@ describe('Reduxable', () => {
       })
 
       const store = createStore(reduxableSet)
-      Reduxable.setStore(store)
+      Reduxable._setStore(store)
 
       expect(reduxableSet.getState()).toEqual({ oneChild: { anotherChild: { counterOne: 0, counterTwo: 0 } } })
 
@@ -315,7 +315,7 @@ describe('Reduxable', () => {
       })
 
       const store = createStore(reduxableSet)
-      Reduxable.setStore(store)
+      Reduxable._setStore(store)
 
       expect(reduxableSet.childOne._scope).toEqual('childOne')
       expect(reduxableSet.childTwo._scope).toEqual('childTwo')

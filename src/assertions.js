@@ -30,15 +30,6 @@ export function assertState(state) {
   }
 }
 
-export function assertReducerName(reduxable, reducerName) {
-  if (reduxable[reducerName] !== undefined) {
-    throw new Error(
-      `You are defining a reducer and a method with the same name '${reducerName}'.\n` +
-        `You need to change the reducer or the method name.`,
-    )
-  }
-}
-
 export function assertChildName(reduxable, stateChildName) {
   if (reduxable[stateChildName] !== undefined) {
     throw new Error(

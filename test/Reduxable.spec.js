@@ -12,9 +12,19 @@ const MISSING_STATE_ERROR_MSG =
 
 class Counter extends Reduxable {
   constructor() {
-    super(0, { increment: state => state + 1, decrement: state => state - 1 })
+    super(0)
+  }
+
+  increment() {
+    this.reducers.increment()
+  }
+
+  decrement() {
+    this.reducers.decrement()
   }
 }
+Counter.reducers = { increment: state => state + 1, decrement: state => state - 1 }
+Counter.globalReducers = { reset: () => 0 }
 
 const counterReducerFunction = (state = 0, action) => {
   switch (action.type) {
@@ -66,13 +76,13 @@ describe('Reduxable', () => {
     })
   })
 
-  describe('reducers', () => {
-    it('should be exposed as a property', () => {
-      const reducers = { keep: state => state, reverse: state => !state }
-      const reduxable = new Reduxable(null, reducers)
-      expect(reduxable.reducers).toEqual(reducers)
-    })
-  })
+  // describe('reducers', () => {
+  //   it('should be exposed as a property', () => {
+  //     const reducers = { keep: state => state, reverse: state => !state }
+  //     const reduxable = new Reduxable(null, reducers)
+  //     expect(reduxable.reducers).toEqual(reducers)
+  //   })
+  // })
 
   describe('getState', () => {
     it('should return the default state (no connected with Redux)', () => {
@@ -92,18 +102,36 @@ describe('Reduxable', () => {
     })
   })
 
+  describe('state getter', () => {
+    it('should return the default state (no connected with Redux)', () => {
+      const reducers = { addLetter: state => state + 'A' }
+      const reduxable = new Reduxable('SOME_INITIAL_STATE', reducers)
+      expect(reduxable.state).toEqual('SOME_INITIAL_STATE')
+    })
+
+    it('should return the default state (connected with Redux)', () => {
+      const reducers = { addLetter: state => state + 'A' }
+      const reduxable = new Reduxable('SOME_INITIAL_STATE', reducers)
+      const store = createStore(reduxable)
+      Reduxable._setStore(store)
+
+      expect(reduxable.state).toEqual('SOME_INITIAL_STATE')
+      expect(store.getState()).toEqual('SOME_INITIAL_STATE')
+    })
+  })
+
   describe('actionCreators', () => {
-    it('should be exposed as methods', () => {
+    it('should be exposed as methods in the `reducers` property', () => {
       const reducers = { keep: state => state, reverse: state => !state }
       const reduxable = new Reduxable(null, reducers)
 
-      expect(typeof reduxable.keep).toEqual('function')
-      expect(typeof reduxable.reverse).toEqual('function')
+      expect(typeof reduxable.reducers.keep).toEqual('function')
+      expect(typeof reduxable.reducers.reverse).toEqual('function')
     })
 
     it('should modify the state even if not connected with Redux', () => {
       const counter = new Reduxable(0, { increment: state => state + 1 })
-      counter.increment()
+      counter.reducers.increment()
       expect(counter.getState()).toEqual(1)
     })
 
@@ -112,8 +140,32 @@ describe('Reduxable', () => {
       const store = createStore(counter)
       Reduxable._setStore(store)
 
-      counter.increment()
+      counter.reducers.increment()
       expect(counter.getState()).toEqual(11)
+    })
+  })
+
+  describe('globalReducers', () => {
+    it('should listen to global actions no matter the scope', () => {
+      class NewCounter extends Reduxable {
+        constructor() {
+          super(10)
+        }
+      }
+
+      NewCounter.reducers = { increment: state => state + 1 }
+      NewCounter.globalReducers = { reset: () => 0 }
+
+      const counter = new NewCounter()
+
+      const store = createStore(counter)
+      Reduxable._setStore(store)
+
+      expect(counter.state).toEqual(10)
+      counter.reducers.increment()
+      expect(counter.state).toEqual(11)
+      store.dispatch({ type: 'reset' })
+      expect(counter.state).toEqual(0)
     })
   })
 
@@ -123,7 +175,7 @@ describe('Reduxable', () => {
       const store = createStore(combineReducers({ counter }))
       Reduxable._setStore(store)
 
-      counter.increment()
+      counter.reducers.increment()
       expect(counter.getState()).toEqual(21)
       expect(store.getState()).toEqual({ counter: 21 })
     })
@@ -134,12 +186,12 @@ describe('Reduxable', () => {
       const store = createStore(combineReducers({ counter1, counter2 }))
       Reduxable._setStore(store)
 
-      counter1.increment()
+      counter1.reducers.increment()
       expect(counter1.getState()).toEqual(1)
       expect(counter2.getState()).toEqual(5)
       expect(store.getState()).toEqual({ counter1: 1, counter2: 5 })
 
-      counter2.increment()
+      counter2.reducers.increment()
       expect(counter1.getState()).toEqual(1)
       expect(counter2.getState()).toEqual(6)
       expect(store.getState()).toEqual({ counter1: 1, counter2: 6 })
@@ -186,7 +238,7 @@ describe('Reduxable', () => {
 
         const counter = new ValidReduxable()
         expect(counter.getState()).toEqual(0)
-        counter.increment()
+        counter.reducers.increment()
         expect(counter.getState()).toEqual(1)
       })
 
@@ -201,8 +253,8 @@ describe('Reduxable', () => {
 
         const counter = new ValidReduxable()
         expect(counter.getState()).toEqual(0)
-        counter.increment()
-        expect(counter.getState()).toEqual(1)
+        counter.reducers.increment()
+        expect(counter.state).toEqual(1)
       })
     })
 
@@ -219,21 +271,6 @@ describe('Reduxable', () => {
         expect(() => new InvalidReduxable()).toThrowError(
           `You are defining a state child and a method with the same name 'counter'.\n` +
             `You need to change the state child or the method name.`,
-        )
-      })
-
-      it('should throw error if method name and reducer name collide', () => {
-        class InvalidReduxable extends Reduxable {
-          constructor() {
-            super(0, { increment: state => state + 1 })
-          }
-
-          increment() {}
-        }
-
-        expect(() => new InvalidReduxable()).toThrowError(
-          `You are defining a reducer and a method with the same name 'increment'.\n` +
-            `You need to change the reducer or the method name.`,
         )
       })
     })

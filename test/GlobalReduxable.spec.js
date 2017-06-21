@@ -19,10 +19,10 @@ describe('GlobalReduxable', () => {
       const store = createStore(combineReducers({ globalCounter1, globalCounter2 }))
       GlobalReduxable._setStore(store)
 
-      globalCounter1.increment()
+      globalCounter1.reducers.increment()
       expect(store.getState()).toEqual({ globalCounter1: 1, globalCounter2: 1 })
 
-      globalCounter2.increment()
+      globalCounter2.reducers.increment()
       expect(store.getState()).toEqual({ globalCounter1: 2, globalCounter2: 2 })
     })
   })
@@ -35,12 +35,12 @@ describe('GlobalReduxable', () => {
       Reduxable._setStore(store)
       GlobalReduxable._setStore(store)
 
-      scopedCounter.increment()
+      scopedCounter.reducers.increment()
       expect(scopedCounter.getState()).toEqual(1)
       expect(globalCounter.getState()).toEqual(1)
       expect(store.getState()).toEqual({ scopedCounter: 1, globalCounter: 1 })
 
-      globalCounter.increment()
+      globalCounter.reducers.increment()
       expect(scopedCounter.getState()).toEqual(1)
       expect(globalCounter.getState()).toEqual(2)
       expect(store.getState()).toEqual({ scopedCounter: 1, globalCounter: 2 })

@@ -11,14 +11,12 @@ class TodoApp extends ReduxableSet {
   }
 
   addTodo = text => {
-    console.log('este', this)
     this.todos.addTodo(text)
   }
 
   toggleTodo = todoId => this.todos.toggleTodo(todoId)
 
   getVisibleTodos = () => {
-    console.warn('a ver', this)
     const { todos, visibilityFilter } = this.getState()
 
     switch (visibilityFilter) {

@@ -7,7 +7,6 @@ Todos.state = []
 let nextTodoId = 0
 Todos.reducers = {
   addTodo: (state, text) => {
-    console.trace('quien me llama?')
     return [...state, { id: nextTodoId++, text, completed: false }]
   },
 

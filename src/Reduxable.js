@@ -1,5 +1,5 @@
 import combineReducers from './combineReducers'
-import { assertReducersObject, assertState, assertChildName, assertReducerName } from './assertions'
+import { assertReducersObject, assertState, assertChildName } from './assertions'
 
 import warning from './utils/warning'
 
@@ -29,6 +29,7 @@ class Reduxable {
     } else {
       assertReducersObject(reducers)
       this._setupReducers(reducers)
+      this._setupGlobalReducers(this.constructor.globalReducers)
       this._state = state
       this.reduce = this._getReducer()
     }
@@ -128,14 +129,19 @@ class Reduxable {
 
   _getReducer() {
     return (state = this.state, { type, scope, payload }) => {
+      const globalReducer = this._globalReducers[type]
+      if (globalReducer) {
+        return globalReducer(state, payload)
+      }
+
       if (!this.constructor._global && scope !== this._scope) {
         return state
       }
 
-      const method = this.reducers[type]
+      const scopedReducer = this._scopedReducers[type]
 
-      if (method) {
-        return method(state, payload)
+      if (scopedReducer) {
+        return scopedReducer(state, payload)
       } else {
         // TODO: should we show a warning here? I think this shouldn't be reached never
       }
@@ -153,14 +159,22 @@ class Reduxable {
   */
 
   _setupReducers(reducers) {
-    this.reducers = reducers
+    this._scopedReducers = reducers
+    this.reducers = {}
 
     for (const reducerName in reducers) {
       if (reducers.hasOwnProperty(reducerName)) {
-        assertReducerName(this, reducerName)
-        this[reducerName] = payload => this._callReducer(reducerName, payload)
+        // this[reducerName] = payload => this._callReducer(reducerName, payload)
+        this.reducers[reducerName] = payload => this._callReducer(reducerName, payload)
       }
     }
+  }
+  /*
+  *  This method will store the `globalReducers` that will listen that actions no matter the scope
+  */
+
+  _setupGlobalReducers(globalReducers = {}) {
+    this._globalReducers = globalReducers
   }
 
   /*
@@ -191,7 +205,7 @@ class Reduxable {
       return store.dispatch({ type: reducerName, scope: this._scope, payload })
     }
 
-    this._state = this.reducers[reducerName](this.state, payload)
+    this._state = this._scopedReducers[reducerName](this.state, payload)
   }
 }
 

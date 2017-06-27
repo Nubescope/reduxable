@@ -43,7 +43,7 @@ Reduxable is a lib to create reusable _state components_. We're convinced that t
 
 All you need to care about is what really matters, the real logic: the state, the reducers and some selectors and methods to do async stuffs.
 
-Internally each action has a `scope` and each reducer will check for it. Also you can access to the state using `getState()` which will give you the portion of the state for this _state component_.
+Internally each action has a `scope` and each reducer will check for it. Also you can access to the state using `.state` which will give you the portion of the state for this _state component_.
 
 ### Integration
 Since Reduxable is fully compatible with Redux, we recommend you to integrate it first and check everything is working well before start creating your Reduxable _state components_.

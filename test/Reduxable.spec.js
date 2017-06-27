@@ -76,32 +76,6 @@ describe('Reduxable', () => {
     })
   })
 
-  // describe('reducers', () => {
-  //   it('should be exposed as a property', () => {
-  //     const reducers = { keep: state => state, reverse: state => !state }
-  //     const reduxable = new Reduxable(null, reducers)
-  //     expect(reduxable.reducers).toEqual(reducers)
-  //   })
-  // })
-
-  describe('getState', () => {
-    it('should return the default state (no connected with Redux)', () => {
-      const reducers = { addLetter: state => state + 'A' }
-      const reduxable = new Reduxable('SOME_INITIAL_STATE', reducers)
-      expect(reduxable.getState()).toEqual('SOME_INITIAL_STATE')
-    })
-
-    it('should return the default state (connected with Redux)', () => {
-      const reducers = { addLetter: state => state + 'A' }
-      const reduxable = new Reduxable('SOME_INITIAL_STATE', reducers)
-      const store = createStore(reduxable)
-      Reduxable._setStore(store)
-
-      expect(reduxable.getState()).toEqual('SOME_INITIAL_STATE')
-      expect(store.getState()).toEqual('SOME_INITIAL_STATE')
-    })
-  })
-
   describe('state getter', () => {
     it('should return the default state (no connected with Redux)', () => {
       const reducers = { addLetter: state => state + 'A' }
@@ -132,7 +106,7 @@ describe('Reduxable', () => {
     it('should modify the state even if not connected with Redux', () => {
       const counter = new Reduxable(0, { increment: state => state + 1 })
       counter.reducers.increment()
-      expect(counter.getState()).toEqual(1)
+      expect(counter.state).toEqual(1)
     })
 
     it('should modify the state connected with Redux', () => {
@@ -141,7 +115,7 @@ describe('Reduxable', () => {
       Reduxable._setStore(store)
 
       counter.reducers.increment()
-      expect(counter.getState()).toEqual(11)
+      expect(counter.state).toEqual(11)
     })
   })
 
@@ -176,7 +150,7 @@ describe('Reduxable', () => {
       Reduxable._setStore(store)
 
       counter.reducers.increment()
-      expect(counter.getState()).toEqual(21)
+      expect(counter.state).toEqual(21)
       expect(store.getState()).toEqual({ counter: 21 })
     })
 
@@ -187,13 +161,13 @@ describe('Reduxable', () => {
       Reduxable._setStore(store)
 
       counter1.reducers.increment()
-      expect(counter1.getState()).toEqual(1)
-      expect(counter2.getState()).toEqual(5)
+      expect(counter1.state).toEqual(1)
+      expect(counter2.state).toEqual(5)
       expect(store.getState()).toEqual({ counter1: 1, counter2: 5 })
 
       counter2.reducers.increment()
-      expect(counter1.getState()).toEqual(1)
-      expect(counter2.getState()).toEqual(6)
+      expect(counter1.state).toEqual(1)
+      expect(counter2.state).toEqual(6)
       expect(store.getState()).toEqual({ counter1: 1, counter2: 6 })
     })
   })
@@ -237,9 +211,9 @@ describe('Reduxable', () => {
         ValidReduxable.reducers = { increment: state => state + 1 }
 
         const counter = new ValidReduxable()
-        expect(counter.getState()).toEqual(0)
+        expect(counter.state).toEqual(0)
         counter.reducers.increment()
-        expect(counter.getState()).toEqual(1)
+        expect(counter.state).toEqual(1)
       })
 
       it('should work using static reducers and providing state in constructor', () => {
@@ -252,7 +226,7 @@ describe('Reduxable', () => {
         ValidReduxable.reducers = { increment: state => state + 1 }
 
         const counter = new ValidReduxable()
-        expect(counter.getState()).toEqual(0)
+        expect(counter.state).toEqual(0)
         counter.reducers.increment()
         expect(counter.state).toEqual(1)
       })
@@ -286,19 +260,19 @@ describe('Reduxable', () => {
       const store = createStore(reduxableSet)
       Reduxable._setStore(store)
 
-      expect(reduxableSet.getState()).toEqual({ counterOne: 0, counterTwo: 0 })
-      expect(reduxableSet.counterOne.getState()).toEqual(0)
-      expect(reduxableSet.counterTwo.getState()).toEqual(0)
+      expect(reduxableSet.state).toEqual({ counterOne: 0, counterTwo: 0 })
+      expect(reduxableSet.counterOne.state).toEqual(0)
+      expect(reduxableSet.counterTwo.state).toEqual(0)
 
       reduxableSet.counterOne.increment()
-      expect(reduxableSet.getState()).toEqual({ counterOne: 1, counterTwo: 0 })
-      expect(reduxableSet.counterOne.getState()).toEqual(1)
-      expect(reduxableSet.counterTwo.getState()).toEqual(0)
+      expect(reduxableSet.state).toEqual({ counterOne: 1, counterTwo: 0 })
+      expect(reduxableSet.counterOne.state).toEqual(1)
+      expect(reduxableSet.counterTwo.state).toEqual(0)
 
       reduxableSet.counterTwo.increment()
-      expect(reduxableSet.getState()).toEqual({ counterOne: 1, counterTwo: 1 })
-      expect(reduxableSet.counterOne.getState()).toEqual(1)
-      expect(reduxableSet.counterTwo.getState()).toEqual(1)
+      expect(reduxableSet.state).toEqual({ counterOne: 1, counterTwo: 1 })
+      expect(reduxableSet.counterOne.state).toEqual(1)
+      expect(reduxableSet.counterTwo.state).toEqual(1)
     })
 
     it('should compose a reduxable and a traditional reduce function', () => {
@@ -310,13 +284,13 @@ describe('Reduxable', () => {
       const store = createStore(reduxableSet)
       Reduxable._setStore(store)
 
-      expect(reduxableSet.getState()).toEqual({ counterOne: 0, counterTwo: 0 })
+      expect(reduxableSet.state).toEqual({ counterOne: 0, counterTwo: 0 })
 
       reduxableSet.counterOne.increment()
-      expect(reduxableSet.getState()).toEqual({ counterOne: 1, counterTwo: 0 })
+      expect(reduxableSet.state).toEqual({ counterOne: 1, counterTwo: 0 })
 
       store.dispatch({ type: 'INCREMENT' })
-      expect(reduxableSet.getState()).toEqual({ counterOne: 1, counterTwo: 1 })
+      expect(reduxableSet.state).toEqual({ counterOne: 1, counterTwo: 1 })
     })
 
     it('should support nested Reduxable', () => {
@@ -332,13 +306,13 @@ describe('Reduxable', () => {
       const store = createStore(reduxableSet)
       Reduxable._setStore(store)
 
-      expect(reduxableSet.getState()).toEqual({ oneChild: { anotherChild: { counterOne: 0, counterTwo: 0 } } })
+      expect(reduxableSet.state).toEqual({ oneChild: { anotherChild: { counterOne: 0, counterTwo: 0 } } })
 
       reduxableSet.oneChild.anotherChild.counterOne.increment()
-      expect(reduxableSet.getState()).toEqual({ oneChild: { anotherChild: { counterOne: 1, counterTwo: 0 } } })
+      expect(reduxableSet.state).toEqual({ oneChild: { anotherChild: { counterOne: 1, counterTwo: 0 } } })
 
       reduxableSet.oneChild.anotherChild.counterTwo.increment()
-      expect(reduxableSet.getState()).toEqual({ oneChild: { anotherChild: { counterOne: 1, counterTwo: 1 } } })
+      expect(reduxableSet.state).toEqual({ oneChild: { anotherChild: { counterOne: 1, counterTwo: 1 } } })
     })
 
     it('should support similar Reduxables nested at first level', () => {
@@ -358,13 +332,13 @@ describe('Reduxable', () => {
       expect(reduxableSet.childTwo._scope).toEqual('childTwo')
       expect(reduxableSet.childOne.counter._scope).toEqual('childOne.counter')
 
-      expect(reduxableSet.getState()).toEqual({ childOne: { counter: 0 }, childTwo: { counter: 0 } })
+      expect(reduxableSet.state).toEqual({ childOne: { counter: 0 }, childTwo: { counter: 0 } })
 
       reduxableSet.childOne.counter.increment()
-      expect(reduxableSet.getState()).toEqual({ childOne: { counter: 1 }, childTwo: { counter: 0 } })
+      expect(reduxableSet.state).toEqual({ childOne: { counter: 1 }, childTwo: { counter: 0 } })
 
       reduxableSet.childTwo.counter.increment()
-      expect(reduxableSet.getState()).toEqual({ childOne: { counter: 1 }, childTwo: { counter: 1 } })
+      expect(reduxableSet.state).toEqual({ childOne: { counter: 1 }, childTwo: { counter: 1 } })
     })
   })
 })

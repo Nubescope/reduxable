@@ -46,7 +46,7 @@ class Reduxable {
   *
   *  We use this store internally on two Reduxable instance methods:
   *    - `dispatch` to precisely dispatch the actions
-  *    - `getState` to retrieve the portion of state corredpondent to the Reduxable instance
+  *    - `state` getter to retrieve the portion of state corredpondent to the Reduxable instance
   *
   *  This method is called from `createStore` method. See its documentation for more details.
   */
@@ -76,14 +76,6 @@ class Reduxable {
   }
 
   /*
-  *  Alias for `state` getter to keep the same method that Redux
-  */
-
-  getState() {
-    return this.state
-  }
-
-  /*
   *  `state` getter
   *  ------------
   *  Returns the state for this particular scope
@@ -96,7 +88,7 @@ class Reduxable {
   *    })
   *  })
   *
-  *  Then `thisReduxableInstance.getState()` will return `reduxStore.getState().a.b`
+  *  Then `thisReduxableInstance.state` will return `reduxStore.state.a.b`
   */
 
   get state() {

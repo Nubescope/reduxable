@@ -36,13 +36,13 @@ describe('GlobalReduxable', () => {
       GlobalReduxable._setStore(store)
 
       scopedCounter.reducers.increment()
-      expect(scopedCounter.getState()).toEqual(1)
-      expect(globalCounter.getState()).toEqual(1)
+      expect(scopedCounter.state).toEqual(1)
+      expect(globalCounter.state).toEqual(1)
       expect(store.getState()).toEqual({ scopedCounter: 1, globalCounter: 1 })
 
       globalCounter.reducers.increment()
-      expect(scopedCounter.getState()).toEqual(1)
-      expect(globalCounter.getState()).toEqual(2)
+      expect(scopedCounter.state).toEqual(1)
+      expect(globalCounter.state).toEqual(2)
       expect(store.getState()).toEqual({ scopedCounter: 1, globalCounter: 2 })
     })
   })

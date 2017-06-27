@@ -3,7 +3,7 @@ const { addTodo, toggleTodo } = Todos.reducers
 
 describe('Todos reduxable', () => {
   it('should start with correct initial state', () => {
-    expect(new Todos().getState()).toEqual([])
+    expect(new Todos().state).toEqual([])
   })
 
   it('addTodo should add a new todo', () => {
@@ -24,8 +24,8 @@ describe('Todos reduxable', () => {
             id: 0,
           },
         ],
-        'Use Reduxable'
-      )
+        'Use Reduxable',
+      ),
     ).toEqual([
       {
         text: 'Run the tests',
@@ -55,8 +55,8 @@ describe('Todos reduxable', () => {
             id: 0,
           },
         ],
-        1
-      )
+        1,
+      ),
     ).toEqual([
       {
         text: 'Run the tests',

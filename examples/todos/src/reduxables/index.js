@@ -1,8 +1,8 @@
-import { ReduxableSet } from 'reduxable'
+import Reduxable from 'reduxable'
 import Todos from './Todos'
 import VisibilityFilter from './VisibilityFilter'
 
-class TodoApp extends ReduxableSet {
+class TodoApp extends Reduxable {
   constructor() {
     super({
       todos: new Todos(),
@@ -15,7 +15,7 @@ class TodoApp extends ReduxableSet {
   toggleTodo = todoId => this.todos.toggleTodo(todoId)
 
   getVisibleTodos() {
-    const { todos, visibilityFilter } = this.getState()
+    const { todos, visibilityFilter } = this.state
 
     switch (visibilityFilter) {
       case 'SHOW_ALL':

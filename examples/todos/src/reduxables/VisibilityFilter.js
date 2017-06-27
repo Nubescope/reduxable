@@ -2,8 +2,14 @@ import Reduxable from 'reduxable'
 
 class VisibilityFilter extends Reduxable {
   constructor() {
-    super({ setVisibilityFilter: (state, filter) => filter }, 'SHOW_ALL')
+    super('SHOW_ALL')
   }
+
+  static reducers = {
+    setVisibilityFilter: (state, filter) => filter,
+  }
+
+  setVisibilityFilter = filter => this.reducers.setVisibilityFilter(filter)
 }
 
 export default VisibilityFilter

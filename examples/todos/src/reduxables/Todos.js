@@ -1,8 +1,13 @@
 import Reduxable from 'reduxable'
 
-class Todos extends Reduxable {}
+class Todos extends Reduxable {
+  constructor() {
+    super([])
+  }
 
-Todos.state = []
+  addTodo = text => this.reducers.addTodo(text)
+  toggleTodo = id => this.reducers.toggleTodo(id)
+}
 
 let nextTodoId = 0
 Todos.reducers = {

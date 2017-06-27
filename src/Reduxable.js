@@ -9,6 +9,11 @@ function isAReduxableSet(state) {
   }
 
   const firstChild = state[Object.keys(state)[0]]
+
+  if (!firstChild) {
+    return false
+  }
+
   return typeof firstChild === 'function' || (firstChild.reduce && typeof firstChild.reduce === 'function')
 }
 

@@ -122,7 +122,7 @@ newCounter.state // => 1
 ```
 
 #### Reducers alias
-It's easy to define alias for the reducers so, for example, you call `counter.increment` instead of `counter.reducers.increment`. We prefer not to do it automatically to avoid _too magic_ stuff.
+It's easy to define alias for the reducers so, for example, you call `counter.increment()` instead of `counter.reducers.increment()`. We prefer not to do it automatically to avoid _too magic_ stuff.
 ```js
 class Counter extends Reduxable {
   constructor() {
@@ -155,13 +155,13 @@ class DeepState extends Reduxable {
     ...
   }
 
-  getDeepNumber = () => {
-    return this.state.some.deep.number
+  getDeepData = () => {
+    return this.state.some.deep.data
   }
 }
 
 const deepState = new DeepState()
-deepState.getDeepNumber() // => 'Gold'
+deepState.getDeepData() // => 'Gold'
 ```
 
 #### Reducers with payload
@@ -204,7 +204,7 @@ class Counter extends Reduxable {
 
 const newCounter = new Counter()
 // The OLD_REDUX_ACTION reducer will be called if an action with type `OLD_REDUX_ACTION` is dispatched
-dispatch({ type: 'OLD_REDUX_ACTION', ... })
+dispatch({ type: 'OLD_REDUX_ACTION' })
 newCounter.state // => 1000
 ```
 

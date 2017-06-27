@@ -1,11 +1,11 @@
 import React from 'react'
 import { render } from 'react-dom'
-import { createStore, ReduxableSet } from 'reduxable'
+import Reduxable, { createStore } from 'reduxable'
 import { Provider } from 'react-redux'
 import App from './components/App'
 import TodoApp from './reduxables'
 
-const app = new ReduxableSet({
+const app = new Reduxable({
   todoApp1: new TodoApp(),
   todoApp2: new TodoApp(),
 })

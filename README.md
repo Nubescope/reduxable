@@ -39,7 +39,7 @@ But there are some issues that Redux does not solve:
 Reduxable tackle both problems and aims to do it in an elegant way, **always honoring the 3 Redux principles** so we can keep using most of the tools we already have for Redux.
 
 ### What is Reduxable
-Reduxable is a lib to create reusable _state components_. We're convinced that thinking in components is very important; we love React for that reason: you end up with a more robust and easy to understand code. Reduxable enforces you to think this way for the state too.
+Reduxable is a library for creating reusable _state components_. We're convinced that thinking in components is very important; we love React for that reason: you end up with a more robust and easy to understand code. Reduxable enforces you to think this way for the state too.
 
 All you need to care about is what really matters, the real logic: the state, the reducers and some selectors and methods to do async stuffs.
 
@@ -230,7 +230,7 @@ class Counter extends Reduxable {
       .catch(() => this.reducers.decrement())
   }
 
-  incrementWithAsyncAwait = () => {
+  incrementWithAsyncAwait = async () => {
     try {
       await fetch('http://should-increment')
       this.reducers.increment()

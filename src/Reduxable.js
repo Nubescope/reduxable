@@ -39,6 +39,8 @@ class Reduxable {
       this._state = state
       this.reduce = this._getReducer()
     }
+
+    this.componentDidMount()
   }
 
   /*
@@ -129,7 +131,9 @@ class Reduxable {
     return (state = this.state, { type, scope, payload }) => {
       const globalReducer = this._globalReducers[type]
       if (globalReducer) {
-        return globalReducer(state, payload)
+        const newState = globalReducer(state, payload)
+        this.stateWillChange(newState)
+        return newState
       }
 
       if (!this.constructor._global && scope !== this._scope) {
@@ -139,7 +143,9 @@ class Reduxable {
       const scopedReducer = this._scopedReducers[type]
 
       if (scopedReducer) {
-        return scopedReducer(state, payload)
+        const newState = scopedReducer(state, payload)
+        this.stateWillChange(newState)
+        return newState
       } else {
         // TODO: should we show a warning here? I think this shouldn't be reached never
       }
@@ -167,6 +173,7 @@ class Reduxable {
       }
     }
   }
+
   /*
   *  This method will store the `globalReducers` that will listen that actions no matter the scope
   */
@@ -197,14 +204,32 @@ class Reduxable {
   */
 
   _callReducer(reducerName, payload) {
-    const store = this.constructor._store
-
-    if (store) {
-      return store.dispatch({ type: reducerName, scope: this._scope, payload })
+    if (this.constructor._store) {
+      return this._dispatch({ type: reducerName, scope: this._scope, payload })
     }
 
     this._state = this._scopedReducers[reducerName](this.state, payload)
   }
+
+  /*
+  *  This method will dispatch the action calling the lifecycle hooks
+  *  for `actionWillDispatch` and `actionDidDispatch`
+  */
+
+  _dispatch(action) {
+    this.actionWillDispatch(action)
+    this.constructor._store.dispatch(action)
+    this.actionDidDispatch(action)
+  }
+
+  /*
+  *  Default lifecycles
+  */
+
+  componentDidMount() {}
+  actionWillDispatch(action) {}
+  actionDidDispatch(action) {}
+  stateWillChange(state) {}
 }
 
 export default Reduxable

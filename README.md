@@ -4,6 +4,15 @@ Reusable Redux **without boilerplate**
 
 It's strongly based on Redux so you should know how Redux works before start using this library.
 
+## Sections
+* [Installation](#installation)
+* [Motivation](#motivation)
+* [What is Reduxable?](#what-is-reduxable)
+* [Integration](#integration)
+* [Usage](#usage)
+* [Examples](#examples)
+* [Examples](#examples)
+
 ### Installation
 
 To install the stable version:
@@ -244,6 +253,11 @@ const newCounter = new Counter()
 newCounter.incrementWithPromises()
 newCounter.incrementWithAsyncAwait()
 ```
+
+### FAQ
+#### Can I use the Redux Dev-Tools and other middlewares/enhancers?
+Yes. Since Reduxable uses Redux `dispatch` internally most of the middlewares and enhancers will work.
+If you find one that doesn't please create an issue.
 
 ### Examples
 

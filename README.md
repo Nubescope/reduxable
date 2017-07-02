@@ -10,7 +10,7 @@ It's strongly based on Redux so you should know how Redux works before start usi
 * [What is Reduxable?](#what-is-reduxable)
 * [Integration](#integration)
 * [Usage](#usage)
-* [Examples](#examples)
+* [FAQ](#faq)
 * [Examples](#examples)
 
 ### Installation
@@ -256,7 +256,7 @@ newCounter.incrementWithAsyncAwait()
 
 ### FAQ
 #### Can I use the Redux Dev-Tools and other middlewares/enhancers?
-Yes. Since Reduxable uses Redux `dispatch` internally most of the middlewares and enhancers will work.
+Yes. Since Reduxable uses Redux internally and holds the 3 Redux principles, most of the middlewares and enhancers will work out of the box.
 If you find one that doesn't please create an issue.
 
 ### Examples

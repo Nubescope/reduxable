@@ -2,7 +2,9 @@
 
 Reusable Redux **without boilerplate**
 
-It's strongly based on Redux so you should know how Redux works before start using this library.
+It's strongly based on Redux so you should know how Redux works before start using this library. 
+
+_To get more context on the problem this library solves take your time to read [this blog post](https://medium.com/underscopeio/a-solution-to-redux-biggest-pains-1ecd904e1a0b)._
 
 ## Sections
 * [Installation](#installation)

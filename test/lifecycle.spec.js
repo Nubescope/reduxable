@@ -1,6 +1,6 @@
 import Reduxable, { createStore, combineReducers } from '../src'
 
-// const COMPONENT_WILL_MOUNT = 'componentWillMount'
+const COMPONENT_WILL_MOUNT = 'componentWillMount'
 const COMPONENT_DID_MOUNT = 'componentDidMount'
 const STATE_WILL_CHANGE = 'stateWillChange'
 // const STATE_DID_CHANGE = 'stateDidChange'
@@ -8,8 +8,15 @@ const ACTION_WILL_DISPATCH = 'actionWillDispatch'
 const ACTION_DID_DISPATCH = 'actionDidDispatch'
 
 class LifecycleTests extends Reduxable {
-  constructor() {
-    super(0, { increment: state => state + 1, decrement: state => state - 1 })
+  getInitialState() {
+    return 0
+  }
+
+  static getReducers() {
+    return {
+      increment: state => state + 1,
+      decrement: state => state - 1,
+    }
   }
 
   pushLifecycleEvent(type, args) {
@@ -19,6 +26,10 @@ class LifecycleTests extends Reduxable {
 }
 
 class MountingEventsTest extends LifecycleTests {
+  componentWillMount() {
+    this.pushLifecycleEvent(COMPONENT_WILL_MOUNT, arguments)
+  }
+
   componentDidMount() {
     this.pushLifecycleEvent(COMPONENT_DID_MOUNT, arguments)
   }
@@ -66,16 +77,28 @@ describe('Reduxable lifecycle', () => {
   describe('component mounting', () => {
     it('should call `componentDidMount`', () => {
       const lifecycleReduxable = new MountingEventsTest()
+      lifecycleReduxable._mount()
 
-      expect(lifecycleReduxable.lifecycleEvents).toEqual([{ type: COMPONENT_DID_MOUNT, args: [] }])
+      expect(lifecycleReduxable.lifecycleEvents).toEqual([
+        { type: COMPONENT_WILL_MOUNT, args: [] },
+        { type: COMPONENT_DID_MOUNT, args: [] },
+      ])
     })
 
     it('should call `childDidMount` and then `parentDidMount`', () => {
       const events = []
 
       class Child extends Reduxable {
-        constructor() {
-          super(0, { reducer: x => x })
+        static getReducers() {
+          return { reducer: x => x }
+        }
+
+        getInitialState() {
+          return 0
+        }
+
+        componentWillMount() {
+          events.push('childWillMount')
         }
 
         componentDidMount() {
@@ -84,17 +107,26 @@ describe('Reduxable lifecycle', () => {
       }
 
       class Parent extends Reduxable {
-        constructor() {
-          super({ child: new Child() }, { reducer: x => x })
+        static getReducers() {
+          return { reducer: x => x }
+        }
+
+        getInitialState() {
+          return { child: new Child() }
+        }
+
+        componentWillMount() {
+          events.push('parentWillMount')
         }
 
         componentDidMount() {
           events.push('parentDidMount')
         }
       }
-      new Parent()
+      const lifecycleReduxable = new Parent()
+      lifecycleReduxable._mount()
 
-      expect(events).toEqual(['childDidMount', 'parentDidMount'])
+      expect(events).toEqual(['parentWillMount', 'childWillMount', 'childDidMount', 'parentDidMount'])
     })
   })
 

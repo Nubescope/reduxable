@@ -24,16 +24,70 @@ class Reduxable {
   * @param {Object} reducers - An object with pure functions
   */
 
-  constructor(state = this.constructor.state, reducers = this.constructor.reducers) {
+  constructor(state = this.state, reducers = this.constructor.reducers) {
     this.__isReduxable = true
-    assertState(state)
+    this._state = state
+    this._reducers = reducers
+    // TODO: call _mount when store is created
+    // this._mount()
+  }
+
+  /*
+  * This function will look for a `getInitialState` method and call it.
+  * If it does not exists then will use the constructor's 1st parameter as the state.
+  */
+  _getInitialState() {
+    if (typeof this.getInitialState === 'function' && this._state !== undefined) {
+      throw new Error(
+        "You cannot provide the state using `getInitialState` AND the constructor's 1st parameter. You must choose one of them.",
+      )
+    }
+
+    const initialState = typeof this.getInitialState === 'function' ? this.getInitialState() : this._state
+    return assertState(initialState)
+  }
+
+  /*
+  * Default `getReducers` method. Could be overwritten.
+  */
+  static getReducers() {
+    return undefined
+  }
+
+  /*
+  * Internal `_getReducers` method. 
+  * This function will look for a `static getReducers` method and call it.
+  * If it does not exists then will use the constructor's 2nd parameter as the reducers.
+  */
+  _getReducers() {
+    const reducers = this.constructor.getReducers() || this._reducers
+
+    if (reducers === undefined) {
+      warning(
+        `Reducers are not defined. Define the method \`static getReducers()\` for ${this.constructor
+          .name} or provide an object with reducers as the constructor 2nd parameter.`,
+      )
+      return {}
+    }
+
+    return assertReducersObject(reducers)
+  }
+
+  /*
+  * Internal method that will be called when the store is created.
+  * Should be called recursively from the root thru the children.
+  */
+  _mount() {
+    this.componentWillMount()
+
+    const state = this._getInitialState()
+    const reducers = this._getReducers()
 
     if (isAReduxableSet(state)) {
       // TODO: assert valid reduxable set
       this._setupChildren(state)
       this.reduce = combineReducers(state)
     } else {
-      assertReducersObject(reducers)
       this._setupReducers(reducers)
       this._setupGlobalReducers(this.constructor.globalReducers)
       this._state = state
@@ -70,9 +124,9 @@ class Reduxable {
   _setScope(scope) {
     this._scope = scope
 
-    if (this.children) {
-      Object.keys(this.children).forEach(key => {
-        const child = this.children[key]
+    if (this._children) {
+      Object.keys(this._children).forEach(key => {
+        const child = this._children[key]
         child._setScope && child._setScope(`${scope}.${key}`)
       })
     }
@@ -186,12 +240,13 @@ class Reduxable {
   *  This method will setup the state as properties
   */
   _setupChildren(children) {
-    this.children = children
+    this._children = children
 
     for (const childName in children) {
       if (children.hasOwnProperty(childName)) {
         assertChildName(this, childName)
         this[childName] = children[childName]
+        this[childName]._mount()
       }
     }
   }
@@ -226,6 +281,7 @@ class Reduxable {
   *  Default lifecycles
   */
 
+  componentWillMount() {}
   componentDidMount() {}
   actionWillDispatch(action) {}
   actionDidDispatch(action) {}

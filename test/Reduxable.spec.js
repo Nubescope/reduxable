@@ -340,5 +340,38 @@ describe('Reduxable', () => {
       reduxableSet.childTwo.counter.increment()
       expect(reduxableSet.state).toEqual({ childOne: { counter: 1 }, childTwo: { counter: 1 } })
     })
+
+    it('should work with complex state objects', () => {
+      class ValidReduxable extends Reduxable {
+        constructor() {
+          super({
+            nullValue: null,
+            undefinedValue: undefined,
+            falseValue: false,
+            zeroValue: 0,
+            emptyStringValue: '',
+            objectValue: {},
+            arrayValue: [],
+          })
+        }
+      }
+
+      ValidReduxable.reducers = { increment: state => state + 1 }
+
+      const reduxable = new ValidReduxable()
+
+      const store = createStore(combineReducers({ reduxable }))
+      Reduxable._setStore(store)
+
+      expect(reduxable.state).toEqual({
+        nullValue: null,
+        undefinedValue: undefined,
+        falseValue: false,
+        zeroValue: 0,
+        emptyStringValue: '',
+        objectValue: {},
+        arrayValue: [],
+      })
+    })
   })
 })

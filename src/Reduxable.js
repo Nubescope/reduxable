@@ -14,7 +14,7 @@ function isAReduxableSet(state) {
     return false
   }
 
-  return typeof firstChild === 'function' || (firstChild.reduce && typeof firstChild.reduce === 'function')
+  return typeof firstChild === 'function' || firstChild.__isReduxable
 }
 
 class Reduxable {
@@ -25,6 +25,7 @@ class Reduxable {
   */
 
   constructor(state = this.constructor.state, reducers = this.constructor.reducers) {
+    this.__isReduxable = true
     assertState(state)
 
     if (isAReduxableSet(state)) {

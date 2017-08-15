@@ -328,7 +328,7 @@ describe('Reduxable', () => {
 
       const reduxable = new ValidReduxable()
 
-      const store = createStore(combineReducers({ reduxable }))
+      const store = createStore(new Reduxable({ reduxable }))
       Reduxable._setStore(store)
 
       expect(reduxable.state).toEqual({

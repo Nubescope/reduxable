@@ -60,7 +60,7 @@ class Reduxable {
   * If it does not exists then will use the constructor's 2nd parameter as the reducers.
   */
   _getReducers() {
-    const reducers = this.constructor.getReducers() || this._reducers
+    const reducers = this.constructor.getReducers() || this._reducers || {}
 
     if (reducers === undefined) {
       warning(
@@ -246,7 +246,7 @@ class Reduxable {
       if (children.hasOwnProperty(childName)) {
         assertChildName(this, childName)
         this[childName] = children[childName]
-        this[childName]._mount()
+        this[childName]._mount && this[childName]._mount()
       }
     }
   }
@@ -263,7 +263,9 @@ class Reduxable {
       return this._dispatch({ type: reducerName, scope: this._scope, payload })
     }
 
-    this._state = this._scopedReducers[reducerName](this.state, payload)
+    const newState = this._scopedReducers[reducerName](this.state, payload)
+    this.stateWillChange(newState)
+    this._state = newState
   }
 
   /*

@@ -21,9 +21,9 @@ export function assertReducersObject(reducers) {
     throw new Error(`The reducers must be an object and it is '${reducers}'`)
   }
 
-  if (Object.keys(reducers).length === 0) {
-    throw new Error(`The reducers must not be empty`)
-  }
+  // if (Object.keys(reducers).length === 0) {
+  //   throw new Error(`The reducers must not be empty`)
+  // }
 
   return reducers
 }

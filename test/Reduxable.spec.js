@@ -35,7 +35,7 @@ describe('Reduxable', () => {
   })
 
   describe('constructor assertions', () => {
-    xdescribe('state (1st parameter)', () => {
+    describe('state (1st parameter)', () => {
       it('should throw error if state is undefined', () => {
         expect(() => {
           const reduxable = new Reduxable()
@@ -45,11 +45,11 @@ describe('Reduxable', () => {
     })
 
     describe('reducers (2nd parameter)', () => {
-      it('should throw error if no reducers provided'), () => {
-        expect(() => new Reduxable('MOCK_STATE')).toThrowError(UNDEFINED_REDUCERS_ERROR)
-      }
+      xit('should throw error if no reducers provided', () => {
+        expect(() => new Reduxable('MOCK_STATE')._mount()).toThrowError(UNDEFINED_REDUCERS_ERROR)
+      })
 
-      it('should throw error if reducers is null', () => {
+      xit('should throw error if reducers is null', () => {
         expect(() => new Reduxable('MOCK_STATE', null)._mount()).toThrowError(
           `The reducers must be an object and it is 'null'`,
         )
@@ -67,11 +67,11 @@ describe('Reduxable', () => {
         )
       })
 
-      it('should throw error if reducers are an empty object', () => {
+      xit('should throw error if reducers are an empty object', () => {
         expect(() => new Reduxable('MOCK_STATE', {})._mount()).toThrowError(`The reducers must not be empty`)
       })
 
-      it('should throw error if reducers are an empty array', () => {
+      xit('should throw error if reducers are an empty array', () => {
         expect(() => new Reduxable('MOCK_STATE', [])._mount()).toThrowError(`The reducers must not be empty`)
       })
     })
@@ -183,7 +183,7 @@ describe('Reduxable', () => {
         new ValidReduxable()._mount()
       })
 
-      xit('should work using static reducers and providing state in constructor', () => {
+      it('should work using static reducers and providing state via getInitialState', () => {
         class ValidReduxable extends Reduxable {
           getInitialState() {
             return 0
@@ -193,13 +193,14 @@ describe('Reduxable', () => {
         ValidReduxable.reducers = { increment: state => state + 1 }
 
         const counter = new ValidReduxable()
+        counter._mount()
         expect(counter.state).toEqual(0)
         counter.reducers.increment()
         expect(counter.state).toEqual(1)
       })
     })
 
-    fdescribe('methods assertions', () => {
+    describe('methods assertions', () => {
       it('should throw error if method name and state child name collide', () => {
         class InvalidReduxable extends Reduxable {
           getInitialState() {

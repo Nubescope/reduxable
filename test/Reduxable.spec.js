@@ -216,6 +216,37 @@ describe('Reduxable', () => {
         )
       })
     })
+
+    describe('using extended classes', () => {
+      it('should work', () => {
+        class ValidReduxable extends Reduxable {
+          constructor() {
+            super(0)
+          }
+        }
+
+        ValidReduxable.reducers = {
+          increment: state => state + 1,
+        }
+
+        const app = new Reduxable({
+          nested: new ValidReduxable(),
+        })
+
+        const store = createStore(app)
+        // Reduxable._setStore(store)
+
+        expect(app.state).toEqual({ nested: 0 })
+        expect(app.nested.state).toEqual(0)
+        expect(store.getState()).toEqual({ nested: 0 })
+
+        app.nested.reducers.increment()
+
+        expect(app.state).toEqual({ nested: 1 })
+        expect(app.nested.state).toEqual(1)
+        expect(store.getState()).toEqual({ nested: 1 })
+      })
+    })
   })
 
   describe('as a combination of reduxables/reducers', () => {
@@ -226,16 +257,18 @@ describe('Reduxable', () => {
       })
 
       const store = createStore(reduxableSet)
-      Reduxable._setStore(store)
+      // Reduxable._setStore(store)
 
       expect(reduxableSet.state).toEqual({ counterOne: 0, counterTwo: 0 })
       expect(reduxableSet.counterOne.state).toEqual(0)
       expect(reduxableSet.counterTwo.state).toEqual(0)
+      expect(store.getState()).toEqual({ counterOne: 0, counterTwo: 0 })
 
       reduxableSet.counterOne.increment()
       expect(reduxableSet.state).toEqual({ counterOne: 1, counterTwo: 0 })
       expect(reduxableSet.counterOne.state).toEqual(1)
       expect(reduxableSet.counterTwo.state).toEqual(0)
+      expect(store.getState()).toEqual({ counterOne: 1, counterTwo: 0 })
 
       reduxableSet.counterTwo.increment()
       expect(reduxableSet.state).toEqual({ counterOne: 1, counterTwo: 1 })

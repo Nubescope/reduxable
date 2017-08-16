@@ -112,6 +112,17 @@ class Reduxable {
     this._store = store
   }
 
+  _setStore(store) {
+    this._store = store
+
+    if (this._children) {
+      Object.keys(this._children).forEach(key => {
+        const child = this._children[key]
+        child._setStore && child._setStore(store)
+      })
+    }
+  }
+
   /*
   *  The `_scope` will define where this Reduxable instance is placed on the global state tree
   *
@@ -149,10 +160,10 @@ class Reduxable {
   */
 
   get state() {
-    if (!this.constructor._store) {
+    if (!this._store) {
       return this._state
     }
-    let rootState = this.constructor._store.getState()
+    let rootState = this._store.getState()
     if (!this._scope) {
       return rootState
     }
@@ -259,7 +270,7 @@ class Reduxable {
   */
 
   _callReducer(reducerName, payload) {
-    if (this.constructor._store) {
+    if (this._store) {
       return this._dispatch({ type: reducerName, scope: this._scope, payload })
     }
 
@@ -275,7 +286,7 @@ class Reduxable {
 
   _dispatch(action) {
     this.actionWillDispatch(action)
-    this.constructor._store.dispatch(action)
+    this._store.dispatch(action)
     this.actionDidDispatch(action)
   }
 

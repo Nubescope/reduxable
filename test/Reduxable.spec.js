@@ -30,10 +30,6 @@ const counterReducerFunction = (state = 0, action) => {
 }
 
 describe('Reduxable', () => {
-  beforeEach(() => {
-    Reduxable._setStore(undefined)
-  })
-
   describe('constructor assertions', () => {
     describe('state (1st parameter)', () => {
       it('should throw error if state is undefined', () => {
@@ -51,19 +47,19 @@ describe('Reduxable', () => {
 
       xit('should throw error if reducers is null', () => {
         expect(() => new Reduxable('MOCK_STATE', null)._mount()).toThrowError(
-          `The reducers must be an object and it is 'null'`,
+          `The reducers must be an object and it is 'null'`
         )
       })
 
       it('should throw error if reducers is a number', () => {
         expect(() => new Reduxable('MOCK_STATE', 123)._mount()).toThrowError(
-          `The reducers must be an object and it is '123'`,
+          `The reducers must be an object and it is '123'`
         )
       })
 
       it('should throw error if reducers is a string', () => {
         expect(() => new Reduxable('MOCK_STATE', 'foo')._mount()).toThrowError(
-          `The reducers must be an object and it is 'foo'`,
+          `The reducers must be an object and it is 'foo'`
         )
       })
 
@@ -89,7 +85,6 @@ describe('Reduxable', () => {
       const reducers = { addLetter: state => state + 'A' }
       const reduxable = new Reduxable('SOME_INITIAL_STATE', reducers)
       const store = createStore(reduxable)
-      Reduxable._setStore(store)
 
       expect(reduxable.state).toEqual('SOME_INITIAL_STATE')
       expect(store.getState()).toEqual('SOME_INITIAL_STATE')
@@ -116,7 +111,6 @@ describe('Reduxable', () => {
     it('should modify the state connected with Redux', () => {
       const counter = new Reduxable(10, { increment: state => state + 1 })
       const store = createStore(counter)
-      Reduxable._setStore(store)
 
       counter.reducers.increment()
       expect(counter.state).toEqual(11)
@@ -137,7 +131,6 @@ describe('Reduxable', () => {
       const counter = new NewCounter()
 
       const store = createStore(counter)
-      Reduxable._setStore(store)
 
       expect(counter.state).toEqual(10)
       counter.reducers.increment()
@@ -212,7 +205,7 @@ describe('Reduxable', () => {
 
         expect(() => new InvalidReduxable()._mount()).toThrowError(
           `You are defining a state child and a method with the same name 'counter'.\n` +
-            `You need to change the state child or the method name.`,
+            `You need to change the state child or the method name.`
         )
       })
     })
@@ -234,7 +227,6 @@ describe('Reduxable', () => {
         })
 
         const store = createStore(app)
-        // Reduxable._setStore(store)
 
         expect(app.state).toEqual({ nested: 0 })
         expect(app.nested.state).toEqual(0)
@@ -257,7 +249,6 @@ describe('Reduxable', () => {
       })
 
       const store = createStore(reduxableSet)
-      // Reduxable._setStore(store)
 
       expect(reduxableSet.state).toEqual({ counterOne: 0, counterTwo: 0 })
       expect(reduxableSet.counterOne.state).toEqual(0)
@@ -283,7 +274,6 @@ describe('Reduxable', () => {
       })
 
       const store = createStore(reduxableSet)
-      Reduxable._setStore(store)
 
       expect(reduxableSet.state).toEqual({ counterOne: 0, counterTwo: 0 })
 
@@ -305,7 +295,6 @@ describe('Reduxable', () => {
       })
 
       const store = createStore(reduxableSet)
-      Reduxable._setStore(store)
 
       expect(reduxableSet.state).toEqual({ oneChild: { anotherChild: { counterOne: 0, counterTwo: 0 } } })
 
@@ -327,7 +316,6 @@ describe('Reduxable', () => {
       })
 
       const store = createStore(reduxableSet)
-      Reduxable._setStore(store)
 
       expect(reduxableSet.childOne._scope).toEqual('childOne')
       expect(reduxableSet.childTwo._scope).toEqual('childTwo')
@@ -362,7 +350,6 @@ describe('Reduxable', () => {
       const reduxable = new ValidReduxable()
 
       const store = createStore(new Reduxable({ reduxable }))
-      Reduxable._setStore(store)
 
       expect(reduxable.state).toEqual({
         nullValue: null,

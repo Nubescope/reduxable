@@ -70,14 +70,10 @@ class WholeLifecycle extends LifecycleTests {
 }
 
 describe('Reduxable lifecycle', () => {
-  beforeEach(() => {
-    Reduxable._setStore(undefined)
-  })
-
   describe('component mounting', () => {
     it('should call `componentDidMount`', () => {
       const lifecycleReduxable = new MountingEventsTest()
-      lifecycleReduxable._mount()
+      createStore(lifecycleReduxable)
 
       expect(lifecycleReduxable.lifecycleEvents).toEqual([
         { type: COMPONENT_WILL_MOUNT, args: [] },
@@ -124,7 +120,7 @@ describe('Reduxable lifecycle', () => {
         }
       }
       const lifecycleReduxable = new Parent()
-      lifecycleReduxable._mount()
+      createStore(lifecycleReduxable)
 
       expect(events).toEqual(['parentWillMount', 'childWillMount', 'childDidMount', 'parentDidMount'])
     })
@@ -134,7 +130,6 @@ describe('Reduxable lifecycle', () => {
     it('should call `actionWillDispatch` and then `actionDidDispatch`', () => {
       const actionEventsTest = new ActionEventsTest()
       const store = createStore(actionEventsTest)
-      Reduxable._setStore(store)
 
       actionEventsTest.reducers.increment()
 
@@ -149,7 +144,6 @@ describe('Reduxable lifecycle', () => {
     it('should call `actionWillDispatch` and `actionDidDispatch` twice if the reducer is called twice', () => {
       const actionEventsTest = new ActionEventsTest()
       const store = createStore(actionEventsTest)
-      Reduxable._setStore(store)
 
       actionEventsTest.reducers.increment()
       actionEventsTest.reducers.increment()
@@ -167,7 +161,6 @@ describe('Reduxable lifecycle', () => {
     it('should call `actionWillDispatch` and `actionDidDispatch` for different reducers', () => {
       const actionEventsTest = new ActionEventsTest()
       const store = createStore(actionEventsTest)
-      Reduxable._setStore(store)
 
       actionEventsTest.reducers.increment()
       actionEventsTest.reducers.decrement()
@@ -191,7 +184,6 @@ describe('Reduxable lifecycle', () => {
     it('should call `stateWillChange`', () => {
       const stateChangeTest = new StateEventsTest()
       const store = createStore(stateChangeTest)
-      Reduxable._setStore(store)
 
       stateChangeTest.reducers.increment()
 
@@ -203,7 +195,6 @@ describe('Reduxable lifecycle', () => {
     it('should call `stateWillChange` twice if reducer is called twice', () => {
       const stateChangeTest = new StateEventsTest()
       const store = createStore(stateChangeTest)
-      Reduxable._setStore(store)
 
       stateChangeTest.reducers.increment()
       stateChangeTest.reducers.increment()
@@ -217,7 +208,6 @@ describe('Reduxable lifecycle', () => {
     it('should call `stateWillChange` with different state if state changes', () => {
       const stateChangeTest = new StateEventsTest()
       const store = createStore(stateChangeTest)
-      Reduxable._setStore(store)
 
       stateChangeTest.reducers.increment()
       stateChangeTest.reducers.decrement()

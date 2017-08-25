@@ -39,7 +39,7 @@ class Reduxable {
   _getInitialState() {
     if (typeof this.getInitialState === 'function' && this._state !== undefined) {
       throw new Error(
-        "You cannot provide the state using `getInitialState` AND the constructor's 1st parameter. You must choose one of them.",
+        "You cannot provide the state using `getInitialState` AND the constructor's 1st parameter. You must choose one of them."
       )
     }
 
@@ -65,7 +65,7 @@ class Reduxable {
     if (reducers === undefined) {
       warning(
         `Reducers are not defined. Define the method \`static getReducers()\` for ${this.constructor
-          .name} or provide an object with reducers as the constructor 2nd parameter.`,
+          .name} or provide an object with reducers as the constructor 2nd parameter.`
       )
       return {}
     }
@@ -93,24 +93,18 @@ class Reduxable {
       this._state = state
       this.reduce = this._getReducer()
     }
-
-    this.componentDidMount()
   }
 
   /*
-  *  The `_store` will be the Redux store. Since this store is unique by application, then we
-  *  can save _statically_ and use it across all the Reduxable instances.
+  *  The `_store` will be the Redux store created for this reducer.
+  *  This method will be called recursively to ensure every node in the tree has the store set.
   *
   *  We use this store internally on two Reduxable instance methods:
-  *    - `dispatch` to precisely dispatch the actions
+  *    - `dispatch` to dispatch the actions
   *    - `state` getter to retrieve the portion of state corredpondent to the Reduxable instance
   *
   *  This method is called from `createStore` method. See its documentation for more details.
   */
-
-  static _setStore(store) {
-    this._store = store
-  }
 
   _setStore(store) {
     this._store = store
@@ -118,9 +112,11 @@ class Reduxable {
     if (this._children) {
       Object.keys(this._children).forEach(key => {
         const child = this._children[key]
-        child._setStore && child._setStore(store)
+        child.__isReduxable && child._setStore(store)
       })
     }
+
+    this.componentDidMount()
   }
 
   /*
@@ -138,7 +134,7 @@ class Reduxable {
     if (this._children) {
       Object.keys(this._children).forEach(key => {
         const child = this._children[key]
-        child._setScope && child._setScope(`${scope}.${key}`)
+        child.__isReduxable && child._setScope(`${scope}.${key}`)
       })
     }
   }

@@ -1,33 +1,39 @@
+export const NULL_REDUCERS_ERROR = `The reducers must be an object and it is 'null'`
+export const UNDEFINED_REDUCERS_ERROR =
+  `You must provide the 'reducers' as:\n` +
+  ` - the second parameter of Reduxable constructor\n` +
+  ` - setting the static 'reducers' to your class`
+export const UNDEFINED_STATE_ERROR =
+  `You must provide the 'initial state' as:\n` +
+  ` - the first parameter of Reduxable constructor\n` +
+  ` - setting the static 'state' to your class`
+
 export function assertReducersObject(reducers) {
   if (reducers === null) {
-    throw new Error(`The reducers must be an object and it is 'null'`)
+    throw new Error(NULL_REDUCERS_ERROR)
   }
 
   if (!reducers) {
-    throw new Error(
-      `You must provide the 'reducers' as:\n` +
-        ` - the second parameter of Reduxable constructor\n` +
-        ` - setting the static 'reducers' to your class`,
-    )
+    throw new Error(UNDEFINED_REDUCERS_ERROR)
   }
 
   if (typeof reducers !== 'object') {
     throw new Error(`The reducers must be an object and it is '${reducers}'`)
   }
 
-  if (Object.keys(reducers).length === 0) {
-    throw new Error(`The reducers must not be empty`)
-  }
+  // if (Object.keys(reducers).length === 0) {
+  //   throw new Error(`The reducers must not be empty`)
+  // }
+
+  return reducers
 }
 
 export function assertState(state) {
   if (state === undefined) {
-    throw new Error(
-      `You must provide the 'initial state' as:\n` +
-        ` - the first parameter of Reduxable constructor\n` +
-        ` - setting the static 'state' to your class`,
-    )
+    throw new Error(UNDEFINED_STATE_ERROR)
   }
+
+  return state
 }
 
 export function assertChildName(reduxable, stateChildName) {

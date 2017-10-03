@@ -13,11 +13,12 @@ import Reduxable from './Reduxable'
  */
 
 export default function createStoreWithReduxables(reduxable, ...args) {
-  // TODO: check for Reduxable inhetirance properly
+  // TODO: check for Reduxable inhetirance properly (use __isReduxable)
   //       Don't know why `reduxable.constructor.prototype instanceof Reduxable` is not working
+  reduxable._mount()
   const reducer = typeof reduxable === 'function' ? reduxable : reduxable.reduce
 
   const store = createStore(reducer, ...args)
-  Reduxable._setStore(store)
+  reduxable._setStore(store)
   return store
 }
